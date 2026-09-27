@@ -4,9 +4,11 @@
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0b1120",
-  "theme_color": "#ef4444",
+  "theme_color": "#ffffff",
   "lang": "ar",
   "dir": "rtl",
+  "description": "أدوات PDF مجانية لمعالجة الملفات محلياً داخل المتصفح.",
+  "categories": ["utilities", "productivity"],
   "icons": [
     {
       "src": "/assets/icons/favicon.svg",
