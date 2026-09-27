@@ -63,6 +63,10 @@ function applyLanguage() {
     }
 }
 
+let deferredInstallPrompt=null;
+window.addEventListener('beforeinstallprompt',event=>{event.preventDefault(); deferredInstallPrompt=event; const b=$('#installBtn'); if(b) b.classList.remove('hidden'), b.classList.add('flex');});
+$('#installBtn')?.addEventListener('click',async()=>{if(!deferredInstallPrompt)return; deferredInstallPrompt.prompt(); await deferredInstallPrompt.userChoice; deferredInstallPrompt=null; $('#installBtn')?.classList.add('hidden');});
+
 const toolSearch = $('#toolSearch');
 if (toolSearch) toolSearch.addEventListener('input', renderGrid);
 
