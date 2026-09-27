@@ -24,6 +24,7 @@ const dict = {
         statusProcessing: "جاري المعالجة، يرجى الانتظار...", statusDone: "اكتملت العملية ✓",
         lblRange: "نطاق الصفحات (مثال: 1-3, 5):", lblPassword: "كلمة المرور:", lblOrder: "الترتيب الجديد (مثال: 3,1,2):", lblPos: "موقع الترقيم:",
         posBC: "أسفل الوسط", posBR: "أسفل اليمين", posBL: "أسفل اليسار",
+        searchTools: "ابحث عن أداة...", privacyBadge: "المعالجة محلياً", recentTitle: "آخر الأدوات المستخدمة", noResults: "لم نعثر على أداة مطابقة.", filesSelected: "ملفات محددة", errCancelled: "تم إلغاء المعالجة.", cancelled: "تم الإلغاء", lblRotate: "زاوية التدوير:", lblWatermark: "نص العلامة المائية:", watermarkPlaceholder: "مثال: سري", errWatermark: "أدخل نص العلامة المائية", errRange: "أدخل نطاق صفحات صحيح", multiImageNote: "تم إنشاء ملف ZIP يحتوي على صفحات PNG.",
         
         // Legal Pages Content (HTML format)
         pagePrivacyTitle: "سياسة الخصوصية",
@@ -81,6 +82,7 @@ const dict = {
         statusProcessing: "Processing, please wait...", statusDone: "Completed ✓",
         lblRange: "Page range (e.g. 1-3, 5):", lblPassword: "Password:", lblOrder: "New order (e.g. 3,1,2):", lblPos: "Number Position:",
         posBC: "Bottom Center", posBR: "Bottom Right", posBL: "Bottom Left",
+        searchTools: "Search tools...", privacyBadge: "Local processing", recentTitle: "Recently used", noResults: "No matching tool found.", filesSelected: "files selected", errCancelled: "Processing was cancelled.", cancelled: "Cancelled", lblRotate: "Rotation angle:", lblWatermark: "Watermark text:", watermarkPlaceholder: "Example: Confidential", errWatermark: "Enter watermark text", errRange: "Enter a valid page range", multiImageNote: "A ZIP file containing PNG pages was created.",
         
         pagePrivacyTitle: "Privacy Policy",
         pagePrivacyHtml: `
