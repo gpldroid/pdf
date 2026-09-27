@@ -200,7 +200,7 @@ function renderFiles() {
                 <i class="fa-solid fa-file text-gray-400"></i>
                 <div class="flex flex-col overflow-hidden">
                     <span class="text-sm font-bold truncate" title="${f.name}">${f.name}</span>
-                    <span class="text-xs text-gray-500">${(f.size / 1024 / 1024).toFixed(2)} MB</span>
+                    <span class="text-xs text-gray-500">${(f.size / 1024 / 1024).toFixed(2)} MB · <span data-page-count="${i}">—</span></span>
                 </div>
             </div>
             <button onclick="event.stopPropagation(); removeFile(${i})" class="text-gray-400 hover:text-red-500 p-2 rounded-md hover:bg-white dark:hover:bg-darkCard transition-colors">
@@ -208,6 +208,13 @@ function renderFiles() {
             </button>
         </div>
     `).join('');
+    annotatePageCounts();
+}
+
+async function annotatePageCounts(){
+    const pdfs=APP.files.map((f,i)=>({f,i})).filter(x=>x.f.type==='application/pdf'||x.f.name.toLowerCase().endsWith('.pdf'));
+    if(!pdfs.length) return;
+    try{await ensurePdfJs(); APP.pdfjsReady=true; for(const {f,i} of pdfs){ if(!APP.files.includes(f)) continue; const pdf=await pdfjsLib.getDocument({data:new Uint8Array(await getFileBuffer(f))}).promise; const el=document.querySelector('[data-page-count="'+i+'"]'); if(el) el.textContent=(pdf.numPages+' '+(APP.lang==='ar'?'صفحة':'pages')); }}catch(e){console.warn('Page count unavailable',e);}
 }
 
 function buildExtraControls(toolId) {
