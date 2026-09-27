@@ -4,6 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ef4444">
+    <!-- Theme bootstrap: apply the saved/system theme before Tailwind renders to prevent light/dark flash. -->
+    <script>
+        (function () {
+            try {
+                var saved = localStorage.getItem('wpdf-theme');
+                var theme = saved === 'light' || saved === 'dark'
+                    ? saved
+                    : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                window.__wpdfTheme = theme;
+                document.documentElement.classList.toggle('dark', theme === 'dark');
+                document.documentElement.dataset.theme = theme;
+                var meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', theme === 'dark' ? '#0b1120' : '#ef4444');
+            } catch (e) {
+                window.__wpdfTheme = 'light';
+            }
+        }());
+    </script>
     
     <!-- SEO Meta Tags -->
     <meta name="description" content="World PDF هي المنصة الأفضل والأكثر أماناً لمعالجة ملفات PDF مجاناً. دمج، تقسيم، ضغط، وتحويل ملفات PDF (إلى Word, Excel, صور) مباشرة من متصفحك بدون الحاجة لرفعها، لضمان خصوصيتك بنسبة 100%.">
