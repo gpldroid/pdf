@@ -4,6 +4,13 @@ import { dict } from './core/i18n.js';
 import { toolsData } from './core/tools.js';
 import { $ } from './core/dom.js';
 
+// PDF.js is loaded as a classic script before this ES module.
+if (window.pdfjsLib) {
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    APP.pdfjsReady = true;
+}
+
+
 // --- STREAMING_CHUNK:UI Updaters (i18n & Theme) ---
 function renderGrid() {
     const grid = $('#toolsGrid');
