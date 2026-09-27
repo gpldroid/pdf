@@ -71,3 +71,9 @@ export {
     setTheme,
     toggleTheme
 };
+
+
+const mediaQuery = window.matchMedia?.('(prefers-color-scheme: dark)');
+mediaQuery?.addEventListener?.('change', event => {
+    if (!getStoredTheme()) applyTheme(event.matches ? 'dark' : 'light');
+});
