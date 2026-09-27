@@ -324,6 +324,9 @@ $('#actionBtn').onclick = async () => {
         else if (toolId === 'extract') await processExtract();
         else if (toolId === 'pdf-images') await processPdfImages();
         else if (toolId === 'text') await processText();
+        else if (toolId === 'ocr') await processOcr();
+        else if (toolId === 'flatten') await processFlatten();
+        else if (toolId === 'repair') await processRepair();
         status.textContent = dict[APP.lang].statusDone;
         finishProgress();
     } catch (error) {
@@ -416,6 +419,10 @@ async function processWatermark(){ await ensureLibrary('pdfLib'); const text=$('
 async function processExtract(){ await ensureLibrary('pdfLib'); const p=await loadPdfDoc(APP.files[0]); const nums=parseRange($('#toolInputVal').value,p.getPageCount()); if(!nums.length) throw new Error(dict[APP.lang].errRange); const out=await PDFLib.PDFDocument.create(); const pages=await out.copyPages(p,nums); pages.forEach(pg=>out.addPage(pg)); provideDownload(await out.save({useObjectStreams:true}),'extracted.pdf'); addHistory('extract',APP.files); }
 async function processPdfImages(){ await ensurePdfJs(); await ensureLibrary('jszip'); APP.pdfjsReady=true; const data=new Uint8Array(await getFileBuffer(APP.files[0])); const pdf=await pdfjsLib.getDocument({data}).promise; const zip=new JSZip(); for(let i=1;i<=pdf.numPages;i++){checkCancelled(); const pg=await pdf.getPage(i); const vp=pg.getViewport({scale:1.5}); const canvas=document.createElement('canvas'); canvas.width=vp.width; canvas.height=vp.height; await pg.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise; const blob=await new Promise(res=>canvas.toBlob(res,'image/png')); zip.file('page-'+i+'.png',blob); updateProgress(i,pdf.numPages);} provideDownload(await zip.generateAsync({type:'arraybuffer'}),'pdf-images.zip','application/zip'); addHistory('pdf-images',APP.files); }
 async function processText(){ await ensurePdfJs(); APP.pdfjsReady=true; const data=new Uint8Array(await getFileBuffer(APP.files[0])); const pdf=await pdfjsLib.getDocument({data}).promise; let text=''; for(let i=1;i<=pdf.numPages;i++){checkCancelled(); const pg=await pdf.getPage(i); const c=await pg.getTextContent(); text+=`\n--- Page ${i} ---\n`+c.items.map(x=>x.str).join(' '); updateProgress(i,pdf.numPages);} provideDownload(new TextEncoder().encode(text.trim()),'extracted.txt','text/plain;charset=utf-8'); addHistory('text',APP.files); }
+
+async function processOcr(){ await ensurePdfJs(); await ensureLibrary('tesseract'); APP.pdfjsReady=true; const data=new Uint8Array(await getFileBuffer(APP.files[0])); const pdf=await pdfjsLib.getDocument({data}).promise; const worker=await Tesseract.createWorker('eng+ara'); let out=''; for(let i=1;i<=pdf.numPages;i++){checkCancelled(); const pg=await pdf.getPage(i); const vp=pg.getViewport({scale:1.5}); const canvas=document.createElement('canvas'); canvas.width=vp.width; canvas.height=vp.height; await pg.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise; const result=await worker.recognize(canvas); out+=`\n--- Page ${i} ---\n`+result.data.text.trim(); updateProgress(i,pdf.numPages);} await worker.terminate(); provideDownload(new TextEncoder().encode(out.trim()),'ocr.txt','text/plain;charset=utf-8'); addHistory('ocr',APP.files); }
+async function processFlatten(){ await ensureLibrary('pdfLib'); const p=await loadPdfDoc(APP.files[0]); try{p.getForm().flatten();}catch{} provideDownload(await p.save({useObjectStreams:true}),'flattened.pdf'); addHistory('flatten',APP.files); }
+async function processRepair(){ await ensureLibrary('pdfLib'); const source=await loadPdfDoc(APP.files[0]); const out=await PDFLib.PDFDocument.create(); const pages=await out.copyPages(source,source.getPageIndices()); pages.forEach((pg,i)=>{checkCancelled(); out.addPage(pg); updateProgress(i+1,pages.length);}); provideDownload(await out.save({useObjectStreams:true}),'repaired.pdf'); addHistory('repair',APP.files); }
 
 async function processUnlock() {
     await ensureLibrary('pdfLib');
