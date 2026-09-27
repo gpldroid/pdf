@@ -585,3 +585,6 @@ const APP = {
         applyTheme();
         applyLanguage();
         checkCookies(); // Check and show cookie banner if needed
+
+// Public handlers used by inline HTML attributes and dynamically generated tool cards.
+Object.assign(window, { openTool, closeTool, removeFile, acceptCookies, openPage, closePage });
