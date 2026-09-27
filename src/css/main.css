@@ -18,3 +18,23 @@
         /* Spinner */
         .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; width: 20px; height: 20px; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
+
+/* Responsive layout hardening */
+html { overflow-x: hidden; }
+body { min-width: 0; overflow-x: hidden; }
+img, svg, video, canvas { max-width: 100%; }
+button, a, input, textarea, select { touch-action: manipulation; }
+@media (max-width: 640px) {
+  .glass { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  #modal, #pageModal { padding: .75rem; align-items: flex-end; }
+  #modalBox, #pageModalBox { max-height: calc(100dvh - 1.5rem); border-radius: 1rem 1rem .75rem .75rem; }
+  #modalBody, #pageContent { padding: 1rem; -webkit-overflow-scrolling: touch; }
+  #modalTitle { min-width: 0; max-width: calc(100% - 3rem); line-height: 1.4; }
+  #dropzone { padding: 1.25rem .75rem; min-height: 180px; }
+  #toast { bottom: 5rem; }
+  .mobile-safe { padding-inline: 1rem; }
+}
+.prose-page h1 { font-size: clamp(1.8rem, 5vw, 2.5rem); font-weight: 800; line-height: 1.25; }
+.prose-page h2 { font-size: clamp(1.2rem, 3.5vw, 1.55rem); font-weight: 800; margin-top: 2rem; margin-bottom: .75rem; }
+.prose-page p, .prose-page li { line-height: 1.9; }
+.tool-hero { background: linear-gradient(135deg, #ef4444, #991b1b); }
