@@ -5,3 +5,5 @@ const APP = {
     currentTool: null,
     pdfjsReady: false
 };
+
+export { APP };
