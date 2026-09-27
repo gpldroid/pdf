@@ -1,12 +1,8 @@
-const storedTheme = localStorage.getItem('wpdf-theme');
-const systemTheme = window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-const initialTheme = storedTheme === 'light' || storedTheme === 'dark'
-    ? storedTheme
-    : (window.__wpdfTheme || systemTheme);
+import { getInitialTheme } from './theme.js';
 
 const APP = {
     lang: localStorage.getItem('wpdf-lang') || 'ar',
-    theme: initialTheme,
+    theme: getInitialTheme(),
     files: [],
     currentTool: null,
     pdfjsReady: false
