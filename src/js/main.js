@@ -421,5 +421,10 @@ applyTheme();
 applyLanguage();
 checkCookies(); // Check and show cookie banner if needed
 
+const requestedTool = new URLSearchParams(location.search).get('tool');
+if (requestedTool && toolsData.some(t => t.id === requestedTool)) {
+    setTimeout(() => openTool(requestedTool), 0);
+}
+
 // Public handlers used by inline HTML attributes and dynamically generated tool cards.
 Object.assign(window, { openTool, closeTool, removeFile, acceptCookies, openPage, closePage });
