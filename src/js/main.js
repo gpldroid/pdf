@@ -63,18 +63,29 @@ function applyLanguage() {
 }
 
 function applyTheme() {
-    if (APP.theme === 'dark') {
-        document.documentElement.classList.add('dark');
-        $('#themeBtn').innerHTML = '<i class="fa-solid fa-sun"></i>';
-    } else {
-        document.documentElement.classList.remove('dark');
-        $('#themeBtn').innerHTML = '<i class="fa-solid fa-moon"></i>';
+    const isDark = APP.theme === 'dark';
+    document.documentElement.classList.toggle('dark', isDark);
+    document.documentElement.dataset.theme = APP.theme;
+
+    const themeColor = document.querySelector('meta[name="theme-color"]');
+    if (themeColor) themeColor.setAttribute('content', isDark ? '#0b1120' : '#ef4444');
+
+    const themeBtn = $('#themeBtn');
+    if (themeBtn) {
+        themeBtn.innerHTML = isDark
+            ? '<i class="fa-solid fa-sun"></i>'
+            : '<i class="fa-solid fa-moon"></i>';
+        themeBtn.setAttribute('aria-label', isDark ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الداكن');
     }
 }
 
 // --- STREAMING_CHUNK:Event Listeners & Utils ---
 $('#langBtn').onclick = () => { APP.lang = APP.lang === 'ar' ? 'en' : 'ar'; localStorage.setItem('wpdf-lang', APP.lang); applyLanguage(); };
-$('#themeBtn').onclick = () => { APP.theme = APP.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('wpdf-theme', APP.theme); applyTheme(); };
+$('#themeBtn').onclick = () => {
+    APP.theme = APP.theme === 'dark' ? 'light' : 'dark';
+    localStorage.setItem('wpdf-theme', APP.theme);
+    applyTheme();
+};
 
 document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.onclick = () => {
