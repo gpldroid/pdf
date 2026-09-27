@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#ef4444">
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="World PDF هي المنصة الأفضل والأكثر أماناً لمعالجة ملفات PDF مجاناً. دمج، تقسيم، ضغط، وتحويل ملفات PDF (إلى Word, Excel, صور) مباشرة من متصفحك بدون الحاجة لرفعها، لضمان خصوصيتك بنسبة 100%.">
+    <meta name="keywords" content="دمج PDF, تقسيم PDF, ضغط PDF, تحويل PDF, PDF إلى Word, PDF إلى Excel, أدوات PDF مجانية, تعديل PDF, حماية PDF, فك حماية PDF, معالجة PDF محليا, World PDF, merge pdf, split pdf, compress pdf, pdf converter, free pdf tools, pdf editor, secure pdf, pdf tools online">
+    <meta name="author" content="World PDF">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="language" content="Arabic">
+    
+    <!-- JSON-LD Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "World PDF",
+      "url": "https://www.wpdf.online/",
+      "description": "منصة احترافية مجانية لمعالجة ملفات PDF محلياً داخل متصفحك بأمان. تدعم دمج، تقسيم، تحويل، وتشفير الملفات.",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+    </script>
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://www.wpdf.online/">
+    <meta property="og:title" content="World PDF — أدوات PDF مجانية وسريعة وآمنة">
+    <meta property="og:description" content="مجموعة أدوات احترافية ومجانية لمعالجة ملفات PDF مباشرة عبر متصفحك بأمان تام وبدون رفع ملفاتك لأي خوادم خارجية.">
+    <meta property="og:image" content="https://placehold.co/1200x630/ef4444/ffffff?text=WorldPDF+Tools">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://www.wpdf.online/">
+    <meta name="twitter:title" content="World PDF — أدوات PDF مجانية وسريعة وآمنة">
+    <meta name="twitter:description" content="مجموعة أدوات احترافية ومجانية لمعالجة ملفات PDF مباشرة عبر متصفحك بأمان تام وبدون رفع ملفاتك لأي خوادم خارجية.">
+    <meta name="twitter:image" content="https://placehold.co/1200x630/ef4444/ffffff?text=WPDF+Tools">
+    
+    <title>World PDF — أدوات PDF مجانية وسريعة وآمنة</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Tajawal', 'sans-serif'] },
+                    colors: {
+                        primary: '#ef4444',
+                        primaryDark: '#dc2626',
+                        darkBg: '#0b1120',
+                        darkCard: '#172033',
+                        darkHover: '#243149',
+                        darkBorder: '#334155'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/docx@9.0.0/build/index.umd.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+    <style>
+        /* Custom scrollbar & utilities */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .glass { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        
+        /* Modal Animation */
+        #modal, #pageModal { transition: opacity 0.3s ease; }
+        #modalBox, #pageModalBox { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .modal-hidden { opacity: 0; pointer-events: none; }
+        .modal-hidden #modalBox, .modal-hidden #pageModalBox { transform: scale(0.95) translateY(10px); }
+        
+        /* Spinner */
+        .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top-color: #fff; width: 20px; height: 20px; animation: spin 1s ease-in-out infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 transition-colors duration-300 antialiased selection:bg-primary selection:text-white pb-16">
+
+    <header class="sticky top-0 z-40 w-full glass bg-white/80 dark:bg-darkBg/90 border-b border-gray-200 dark:border-darkBorder">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-2 text-2xl font-extrabold hover:opacity-80 transition-opacity">
+                <i class="fa-solid fa-bolt text-primary"></i>
+                <span>World PDF</span>
+            </a>
+            
+            <nav class="hidden md:flex gap-6 text-sm font-medium" id="navLinks">
+                <a href="#tools" class="hover:text-primary transition-colors" data-i18n="navTools">الأدوات</a>
+                <a href="#about" class="hover:text-primary transition-colors" data-i18n="navAbout">عن الموقع</a>
+                <a href="javascript:void(0)" onclick="openPage('privacy')" class="hover:text-primary transition-colors" data-i18n="navPrivacy">الخصوصية</a>
+                <a href="#contact" class="hover:text-primary transition-colors" data-i18n="navContact">اتصل بنا</a>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <button onclick="location.hash='tools'" class="hidden sm:block border-2 border-primary text-primary hover:bg-primary hover:text-white dark:hover:text-white px-5 py-1.5 rounded-full font-bold transition-all" data-i18n="btnTools">
+                    الأدوات
+                </button>
+                <button id="langBtn" class="w-10 h-10 rounded-full border border-gray-300 dark:border-darkBorder flex items-center justify-center hover:border-primary hover:text-primary transition-all font-bold text-sm bg-white dark:bg-darkCard shadow-sm" title="Change Language">
+                    EN
+                </button>
+                <button id="themeBtn" class="w-10 h-10 rounded-full border border-gray-300 dark:border-darkBorder flex items-center justify-center hover:border-primary hover:text-primary transition-all bg-white dark:bg-darkCard shadow-sm" title="Toggle Theme">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <section class="relative bg-gradient-to-br from-primary to-red-800 text-white overflow-hidden">
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNykiLz48L3N2Zz4=')] opacity-30"></div>
+        <div class="max-w-4xl mx-auto px-4 py-20 text-center relative z-10">
+            <div class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md border border-white/30 rounded-full px-4 py-1.5 text-sm font-medium mb-6 shadow-lg">
+                <i class="fa-solid fa-shield-halved text-yellow-300"></i>
+                <span data-i18n="heroBadge">ملفاتك تبقى آمنة ومحلية على جهازك</span>
+            </div>
+            <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight drop-shadow-md" data-i18n="heroTitle">
+                أدوات PDF تعمل فوراً
+            </h1>
+            <p class="text-lg md:text-xl text-red-100 mb-8 max-w-2xl mx-auto font-medium" data-i18n="heroDesc">
+                دمج، تقسيم، ضغط، تحويل وتنظيم ملفات PDF مباشرة من متصفحك. أمان تام حيث لا يتم رفع ملفاتك إلى أي خادم، مما يجعلنا الأداة الأسرع والأكثر أماناً.
+            </p>
+            <div class="flex flex-wrap justify-center gap-4 font-bold">
+                <a href="#tools" class="bg-white text-red-700 hover:bg-gray-100 px-8 py-3 rounded-full shadow-lg transition-transform hover:scale-105 flex items-center gap-2">
+                    <span data-i18n="heroBtn">استكشف الأدوات</span>
+                    <i class="fa-solid fa-arrow-down rtl:fa-arrow-down"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="tools">
+        <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2" id="filterContainer">
+            <button class="filter-btn active px-6 py-2 rounded-full border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard whitespace-nowrap font-bold text-sm transition-colors [&.active]:bg-primary [&.active]:text-white [&.active]:border-primary" data-cat="all" data-i18n="filterAll">الكل</button>
+            <button class="filter-btn px-6 py-2 rounded-full border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard whitespace-nowrap font-bold text-sm transition-colors hover:border-primary hover:text-primary" data-cat="organize" data-i18n="filterOrg">تنظيم</button>
+            <button class="filter-btn px-6 py-2 rounded-full border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard whitespace-nowrap font-bold text-sm transition-colors hover:border-primary hover:text-primary" data-cat="optimize" data-i18n="filterOpt">تحسين</button>
+            <button class="filter-btn px-6 py-2 rounded-full border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard whitespace-nowrap font-bold text-sm transition-colors hover:border-primary hover:text-primary" data-cat="toPDF" data-i18n="filterToPDF">إلى PDF</button>
+            <button class="filter-btn px-6 py-2 rounded-full border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard whitespace-nowrap font-bold text-sm transition-colors hover:border-primary hover:text-primary" data-cat="fromPDF" data-i18n="filterFromPDF">من PDF</button>
+            <button class="filter-btn px-6 py-2 rounded-full border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard whitespace-nowrap font-bold text-sm transition-colors hover:border-primary hover:text-primary" data-cat="security" data-i18n="filterSec">الأمان</button>
+        </div>
+    </div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="toolsGrid">
+        <!-- Cards generated by JS -->
+    </main>
+
+    <div class="bg-white dark:bg-darkCard border-t border-gray-200 dark:border-darkBorder">
+        <div class="max-w-5xl mx-auto px-4 py-16 space-y-16">
+            
+            <!-- About Us -->
+            <section id="about" class="text-center">
+                <h2 class="text-3xl font-bold mb-6 flex justify-center items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-blue-500"></i> <span data-i18n="aboutTitle">عن موقع World PDF</span>
+                </h2>
+                <div class="text-gray-600 dark:text-gray-400 leading-relaxed space-y-4 max-w-3xl mx-auto text-lg">
+                    <p data-i18n="aboutDesc1">
+                        World PDF هي منصة احترافية مجانية بالكامل، صُممت لتوفير أسهل وأسرع أدوات لمعالجة ملفات PDF مباشرة من متصفحك الإلكتروني دون الحاجة لتثبيت أي برامج.
+                    </p>
+                    <p data-i18n="aboutDesc2">
+                        نحن نولي أهمية قصوى لخصوصيتك؛ لذلك تعتمد تقنياتنا على معالجة الملفات محلياً داخل جهازك (Client-side Processing)، مما يعني أن مستنداتك السرية والشخصية لا يتم رفعها أو تخزينها على أي خوادم خارجية إطلاقاً.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Contact Us Form (Crucial for AdSense) -->
+            <section id="contact" class="bg-gray-50 dark:bg-[#0b1120] rounded-3xl p-8 md:p-12 border border-gray-200 dark:border-darkBorder shadow-sm">
+                <h2 class="text-3xl font-bold text-center mb-8"><i class="fa-solid fa-envelope-open-text text-primary"></i> <span data-i18n="contactTitle">تواصل معنا</span></h2>
+                <p class="text-center text-gray-500 dark:text-gray-400 mb-8 max-w-2xl mx-auto" data-i18n="contactDesc">هل لديك استفسار، اقتراح، أو واجهت مشكلة تقنية؟ يسعدنا تواصلك معنا من خلال النموذج التالي وسنقوم بالرد عليك في أقرب وقت.</p>
+                
+                <form id="contactForm" class="max-w-2xl mx-auto space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" data-i18n="formName">الاسم الكامل</label>
+                            <input type="text" required class="w-full p-3.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-darkCard focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" data-i18n="formEmail">البريد الإلكتروني</label>
+                            <input type="email" required class="w-full p-3.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-darkCard focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-colors">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold mb-2 text-gray-700 dark:text-gray-300" data-i18n="formMsg">رسالتك</label>
+                        <textarea required rows="4" class="w-full p-3.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-darkCard focus:border-primary focus:ring-1 focus:ring-primary outline-none resize-none transition-colors"></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-primary hover:bg-primaryDark text-white font-bold py-4 rounded-xl shadow-md hover:shadow-lg transition-all flex justify-center items-center gap-2 text-lg">
+                        <i class="fa-solid fa-paper-plane"></i> <span data-i18n="formBtn">إرسال الرسالة</span>
+                    </button>
+                </form>
+            </section>
+        </div>
+    </div>
+
+    <footer class="bg-gray-100 dark:bg-[#080d18] border-t border-gray-200 dark:border-darkBorder pt-12 pb-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div class="md:col-span-2">
+                    <a href="#" class="flex items-center gap-2 text-2xl font-extrabold mb-4">
+                        <i class="fa-solid fa-bolt text-primary"></i> World PDF
+                    </a>
+                    <p class="text-gray-500 dark:text-gray-400 text-sm max-w-sm leading-relaxed" data-i18n="footerDesc">
+                        منصتك المجانية والأكثر أماناً لمعالجة ملفات PDF مباشرة عبر متصفحك. لا توجد حدود للاستخدام ولا مساومة على خصوصية بياناتك.
+                    </p>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4 text-gray-800 dark:text-gray-200" data-i18n="footerLinks">روابط هامة</h3>
+                    <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                        <li><a href="javascript:void(0)" onclick="openPage('terms')" class="hover:text-primary transition-colors" data-i18n="navTerms">شروط الاستخدام</a></li>
+                        <li><a href="javascript:void(0)" onclick="openPage('privacy')" class="hover:text-primary transition-colors" data-i18n="navPrivacy">سياسة الخصوصية</a></li>
+                        <li><a href="#about" class="hover:text-primary transition-colors" data-i18n="navAbout">من نحن</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-bold mb-4 text-gray-800 dark:text-gray-200" data-i18n="footerSupport">الدعم والمساعدة</h3>
+                    <ul class="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+                        <li><a href="#contact" class="hover:text-primary transition-colors" data-i18n="navContact">تواصل معنا</a></li>
+                        <li class="flex items-center gap-2"><i class="fa-regular fa-envelope"></i> info@larache.xyz</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="text-center text-sm text-gray-500 dark:text-gray-500 pt-6 border-t border-gray-200 dark:border-darkBorder flex flex-col sm:flex-row justify-between items-center gap-4">
+                <span data-i18n="copyright"> عماد لمراني © 2026 جميع الحقوق محفوظة — World PDF</span>
+                <div class="flex gap-5 text-xl">
+                    <a href="#" class="hover:text-primary transition-colors"><i class="fa-brands fa-github"></i></a>
+                    <a href="#" class="hover:text-primary transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#" class="hover:text-primary transition-colors"><i class="fa-brands fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cookies Consent Banner (Required for AdSense) -->
+    <div id="cookieBanner" class="fixed bottom-0 left-0 right-0 bg-gray-900/95 glass text-white z-[60] transform translate-y-full transition-transform duration-500 border-t border-gray-700 shadow-[0_-10px_40px_rgba(0,0,0,0.2)]">
+        <div class="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-sm text-gray-300 flex-1 flex items-start sm:items-center gap-3">
+                <i class="fa-solid fa-cookie-bite text-2xl text-yellow-500 hidden sm:block"></i>
+                <p id="cookieText">
+                    <!-- Populated by JS i18n -->
+                </p>
+            </div>
+            <div class="flex gap-3 shrink-0 w-full sm:w-auto">
+                <button onclick="acceptCookies()" class="flex-1 sm:flex-none bg-primary hover:bg-primaryDark text-white px-6 py-2.5 rounded-lg font-bold text-sm transition-colors text-center" data-i18n="cookieAccept">موافق</button>
+                <button onclick="acceptCookies()" class="flex-1 sm:flex-none bg-gray-700 hover:bg-gray-600 text-white px-6 py-2.5 rounded-lg font-bold text-sm transition-colors text-center" data-i18n="cookieDecline">إغلاق</button>
+            </div>
+        </div>
+    
+
+    <!-- Back to Top Button -->
+    <button id="backTop" class="fixed bottom-24 sm:bottom-6 rtl:left-6 ltr:right-6 bg-primary text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center hover:-translate-y-1 transition-transform z-40 opacity-0 pointer-events-none">
+        <i class="fa-solid fa-arrow-up"></i>
+    </button>
+
+    <div id="modal" class="fixed inset-0 bg-black/60 glass z-50 flex items-center justify-center p-4 modal-hidden">
+        <div id="modalBox" class="bg-white dark:bg-[#111a2b] w-full max-w-2xl rounded-2xl shadow-2xl border border-gray-200 dark:border-darkBorder overflow-hidden flex flex-col max-h-[90vh]">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between p-5 border-b border-gray-200 dark:border-darkBorder bg-gray-50 dark:bg-darkCard">
+                <h2 id="modalTitle" class="text-xl font-bold flex items-center gap-2"></h2>
+                <button onclick="closeTool()" class="text-gray-400 hover:text-red-500 bg-transparent hover:bg-red-50 dark:hover:bg-red-500/10 w-8 h-8 rounded-full flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-5 overflow-y-auto" id="modalBody">
+                <div id="dropzone" class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl p-8 text-center cursor-pointer hover:border-primary hover:bg-red-50 dark:hover:bg-red-900/10 transition-all flex flex-col items-center justify-center gap-3">
+                    <div class="w-16 h-16 rounded-full bg-red-100 dark:bg-red-900/20 text-primary flex items-center justify-center text-3xl mb-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <p class="font-bold text-lg" id="dropTitle" data-i18n="dropTitle">اختر الملفات أو اسحبها هنا</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400" id="dropSubtitle">صيغ مدعومة: PDF</p>
+                    <input type="file" id="fileInput" class="hidden" multiple>
+                </div>
+                <div id="fileList" class="mt-4 flex flex-col gap-2 empty:hidden"></div>
+                <div id="toolControls" class="mt-5 hidden bg-gray-50 dark:bg-darkCard p-4 rounded-xl border border-gray-200 dark:border-darkBorder"></div>
+                <div class="mt-6 flex flex-col items-center">
+                    <button id="actionBtn" class="bg-primary hover:bg-primaryDark text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 w-full sm:w-auto justify-center">
+                        <span id="actionBtnText">تنفيذ</span>
+                    </button>
+                    <div id="statusText" class="mt-3 text-sm font-medium text-gray-600 dark:text-gray-400 h-5"></div>
+                </div>
+                <div id="resultBox" class="mt-5 hidden p-4 border border-green-500/30 bg-green-50 dark:bg-green-500/10 rounded-xl text-center">
+                    <p class="text-green-700 dark:text-green-400 font-bold mb-3 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-circle-check"></i> <span data-i18n="processSuccess">تمت المعالجة بنجاح!</span>
+                    </p>
+                    <button id="downloadBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg shadow transition-colors flex items-center gap-2 mx-auto">
+                        <i class="fa-solid fa-download"></i> <span data-i18n="btnDownload">تحميل الملف</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+<div id="pageModal" class="fixed inset-0 bg-black/60 glass z-50 flex items-center justify-center p-4 modal-hidden">
+        <div id="pageModalBox" class="bg-white dark:bg-darkCard w-full max-w-4xl rounded-2xl shadow-2xl border border-gray-200 dark:border-darkBorder overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-darkBorder bg-gray-50 dark:bg-darkCard">
+                <h2 id="pageTitle" class="text-2xl font-bold text-primary"></h2>
+                <button onclick="closePage()" class="text-gray-400 hover:text-red-500 bg-white dark:bg-[#0b1120] border border-gray-200 dark:border-darkBorder w-10 h-10 rounded-full flex items-center justify-center transition-colors shadow-sm">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div id="pageContent" class="p-6 md:p-10 overflow-y-auto text-gray-700 dark:text-gray-300 space-y-5 leading-relaxed text-[15px]">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-2xl z-[70] flex items-center gap-3 transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none font-medium text-sm w-max max-w-[90vw]">
+        <i class="fa-solid fa-circle-info text-blue-400" id="toastIcon"></i>
+        <span id="toastMsg">رسالة</span>
+    </div>
+
+    <script>
+        const APP = {
+            lang: localStorage.getItem('wpdf-lang') || 'ar',
+            theme: localStorage.getItem('wpdf-theme') || 'dark',
+            files: [],
+            currentTool: null,
+            pdfjsReady: false
+        };
+
+        // Init PDF.js Worker & Utilities (Cross-Browser Fix)
+        try {
+            if (window.pdfjsLib) {
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                APP.pdfjsReady = true;
+            }
+        } catch (e) { console.error("PDF.js Init Error", e); }
+
+        // Polyfill for Older Browsers (Safari 13, older Android WebViews) that don't support file.arrayBuffer()
+        async function getFileBuffer(file) {
+            if (typeof file.arrayBuffer === 'function') {
+                return await file.arrayBuffer();
+            }
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(reader.error);
+                reader.readAsArrayBuffer(file);
+            });
+        }
+
+        // --- Content & i18n Dictionary ---
+        const dict = {
+            ar: {
+                navTools: "الأدوات", navAbout: "من نحن", navPrivacy: "سياسة الخصوصية", navTerms: "شروط الاستخدام", navContact: "اتصل بنا", btnTools: "استخدم الأدوات",
+                heroBadge: "معالجة محلية آمنة 100%", heroTitle: "أدوات PDF تعمل فوراً", heroDesc: "دمج، تقسيم، ضغط وتحويل ملفات PDF مباشرة من متصفحك. أمان تام حيث لا يتم رفع ملفاتك إلى أي خادم، مما يضمن خصوصيتك.", heroBtn: "تصفح الأدوات المجانية",
+                filterAll: "الكل", filterOrg: "تنظيم", filterOpt: "تحسين", filterToPDF: "إلى PDF", filterFromPDF: "من PDF", filterSec: "الأمان",
+                
+                // About & Contact Additions
+                aboutTitle: "عن World PDF",
+                aboutDesc1: "World PDF هي منصة احترافية مجانية بالكامل، صُممت لتوفير أسهل وأسرع أدوات لمعالجة ملفات PDF مباشرة من متصفحك الإلكتروني دون الحاجة لتثبيت أي برامج أو إنشاء حساب.",
+                aboutDesc2: "نحن نولي أهمية قصوى لخصوصيتك؛ تعتمد تقنياتنا على معالجة الملفات محلياً داخل جهازك (Client-side)، مما يعني أن مستنداتك لا تغادر متصفحك ولا تُخزن على أي خوادم خارجية إطلاقاً.",
+                contactTitle: "تواصل معنا", contactDesc: "هل لديك استفسار، اقتراح، أو واجهت مشكلة تقنية؟ يسعدنا تواصلك معنا وسنقوم بالرد في أقرب وقت.",
+                formName: "الاسم الكامل", formEmail: "البريد الإلكتروني", formMsg: "رسالتك...", formBtn: "إرسال الرسالة", formSuccess: "تم إرسال رسالتك بنجاح! شكراً لتواصلك معنا.",
+                
+                // Footer & Cookies
+                footerDesc: "منصتك المجانية والأكثر أماناً لمعالجة ملفات PDF مباشرة عبر متصفحك. لا مساومة على خصوصية بياناتك.",
+                footerLinks: "روابط قانونية", footerSupport: "الدعم والمساعدة", copyright: "© 2026 جميع الحقوق محفوظة — World PDF",
+                cookieMsg: "نستخدم ملفات تعريف الارتباط (Cookies) لتحسين تجربتك على موقعنا وعرض إعلانات مخصصة وتحليل الزيارات. للمزيد من التفاصيل، يرجى مراجعة <a href='javascript:void(0)' onclick='openPage(\"privacy\")' class='text-primary hover:underline font-bold'>سياسة الخصوصية</a>.",
+                cookieAccept: "موافق", cookieDecline: "إغلاق",
+                
+                // App Text
+                dropTitle: "اختر الملفات أو اسحبها وأفلتها هنا", dropSubPDF: "الصيغ المدعومة: PDF فقط", dropSubImg: "الصيغ المدعومة: JPG, PNG, WebP", dropSubExcel: "الصيغ المدعومة: XLSX, XLS",
+                processSuccess: "تمت المعالجة بنجاح!", btnDownload: "تحميل الملف الآن", btnActionExecute: "تنفيذ العملية", btnActionMerge: "دمج وتحميل", btnActionConvert: "تحويل وتحميل", btnActionProtect: "تشفير وتحميل",
+                errNoFiles: "يرجى اختيار ملف واحد على الأقل", errGeneral: "حدث خطأ أثناء المعالجة", errPassword: "يرجى إدخال كلمة المرور",
+                statusProcessing: "جاري المعالجة، يرجى الانتظار...", statusDone: "اكتملت العملية ✓",
+                lblRange: "نطاق الصفحات (مثال: 1-3, 5):", lblPassword: "كلمة المرور:", lblOrder: "الترتيب الجديد (مثال: 3,1,2):", lblPos: "موقع الترقيم:",
+                posBC: "أسفل الوسط", posBR: "أسفل اليمين", posBL: "أسفل اليسار",
+                
+                // Legal Pages Content (HTML format)
+                pagePrivacyTitle: "سياسة الخصوصية",
+                pagePrivacyHtml: `
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">1. خصوصية الملفات ومعالجتها</h3>
+                    <p>في World PDF، نؤمن بأن خصوصية مستنداتك هي الأولوية. جميع عمليات معالجة الملفات (الدمج، التقسيم، التحويل، إلخ) تتم <strong>محلياً داخل متصفحك</strong>. نحن لا نقوم برفع، أو نقل، أو تخزين أي من ملفاتك على خوادمنا.</p>
+                    
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">2. ملفات تعريف الارتباط (Cookies) وإعلانات جوجل</h3>
+                    <p>يستخدم موقعنا إعلانات Google AdSense كمورد دعم مالي لإبقاء الخدمة مجانية. تستخدم Google، بصفتها مورِّدًا خارجيًا، ملفات تعريف الارتباط لعرض الإعلانات على موقعنا.</p>
+                    <ul class="list-disc list-inside mt-2 space-y-1">
+                        <li>استخدام Google لملف تعريف الارتباط DART يتيح لها عرض الإعلانات للمستخدمين استنادًا إلى زياراتهم لموقعنا والمواقع الأخرى على الإنترنت.</li>
+                        <li>يمكن للمستخدمين تعطيل استخدام ملف تعريف الارتباط DART بزيارة <a href="https://policies.google.com/technologies/ads" target="_blank" class="text-primary hover:underline">سياسة الخصوصية الخاصة بإعلانات Google</a>.</li>
+                    </ul>
+                    
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">3. سجلات الدخول (Log Files)</h3>
+                    <p>مثل معظم المواقع القياسية، نستخدم سجلات الدخول التي تتضمن عناوين بروتوكول الإنترنت (IP)، نوع المتصفح، مزود خدمة الإنترنت (ISP)، طابع التاريخ/الوقت، وصفحات الإحالة/الخروج. تستخدم هذه المعلومات لتحليل الاتجاهات وإدارة الموقع، وهي غير مرتبطة بأي معلومات تحدد الهوية الشخصية.</p>
+
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">4. التغييرات على سياسة الخصوصية</h3>
+                    <p>نحتفظ بالحق في تحديث سياسة الخصوصية هذه في أي وقت. سيتم نشر أي تغييرات على هذه الصفحة.</p>
+                `,
+                pageTermsTitle: "شروط الاستخدام",
+                pageTermsHtml: `
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">1. قبول الشروط</h3>
+                    <p>باستخدامك لموقع وأدوات World PDF، فإنك توافق على الالتزام بشروط الاستخدام هذه. إذا كنت لا توافق على أي جزء من هذه الشروط، يرجى التوقف عن استخدام الموقع.</p>
+                    
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">2. الاستخدام المسموح به</h3>
+                    <p>الموقع مقدم للاستخدام الشخصي والمهني لمعالجة المستندات. يُمنع استخدام الموقع لأي أغراض غير قانونية أو محاولة استغلال الثغرات في الخدمة.</p>
+                    
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">3. إخلاء المسؤولية (Disclaimer)</h3>
+                    <p>يتم تقديم الأدوات "كما هي" دون أي ضمانات صريحة أو ضمنية. نحن غير مسؤولين عن أي تلف أو فقدان للبيانات ناتج عن استخدام الموقع. يُنصح دائماً بالاحتفاظ بنسخة احتياطية من ملفاتك الأصلية قبل معالجتها.</p>
+
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">4. حقوق الملكية الفكرية</h3>
+                    <p>جميع حقوق التصميم، العلامات التجارية، والمحتوى المعروض على الموقع (باستثناء الإعلانات والمحتويات التابعة لجهات خارجية) مملوكة لـ World PDF.</p>
+                `
+            },
+            en: {
+                navTools: "Tools", navAbout: "About Us", navPrivacy: "Privacy Policy", navTerms: "Terms of Use", navContact: "Contact", btnTools: "Use Tools",
+                heroBadge: "100% Secure Local Processing", heroTitle: "Instant PDF Tools", heroDesc: "Merge, split, compress, and convert PDFs directly in your browser. Total privacy—your files are never uploaded to any server.", heroBtn: "Explore Free Tools",
+                filterAll: "All", filterOrg: "Organize", filterOpt: "Optimize", filterToPDF: "To PDF", filterFromPDF: "From PDF", filterSec: "Security",
+                
+                aboutTitle: "About World PDF",
+                aboutDesc1: "World PDF is a completely free, professional platform designed to provide the easiest and fastest tools for processing PDF files directly in your web browser without installing any software or creating an account.",
+                aboutDesc2: "We prioritize your privacy; our technology relies on Client-side Processing, meaning your sensitive documents never leave your browser and are not stored on any external servers.",
+                contactTitle: "Contact Us", contactDesc: "Have a question, suggestion, or encountered a technical issue? We'd love to hear from you. Fill out the form below and we'll reply ASAP.",
+                formName: "Full Name", formEmail: "Email Address", formMsg: "Your Message...", formBtn: "Send Message", formSuccess: "Your message has been sent successfully! Thank you for contacting us.",
+                
+                footerDesc: "Your secure, free platform for processing PDFs directly in your browser. No compromise on your data privacy.",
+                footerLinks: "Legal Links", footerSupport: "Support & Help", copyright: "© 2026 All Rights Reserved — World PDF",
+                cookieMsg: "We use cookies to improve your experience, serve personalized ads, and analyze traffic. For more details, please review our <a href='javascript:void(0)' onclick='openPage(\"privacy\")' class='text-primary hover:underline font-bold'>Privacy Policy</a>.",
+                cookieAccept: "Accept", cookieDecline: "Close",
+                
+                dropTitle: "Choose files or drag & drop here", dropSubPDF: "Supported formats: PDF only", dropSubImg: "Supported formats: JPG, PNG, WebP", dropSubExcel: "Supported formats: XLSX, XLS",
+                processSuccess: "Processing completed successfully!", btnDownload: "Download File Now", btnActionExecute: "Execute", btnActionMerge: "Merge & Download", btnActionConvert: "Convert & Download", btnActionProtect: "Encrypt & Download",
+                errNoFiles: "Please select at least one file", errGeneral: "An error occurred during processing", errPassword: "Please enter a password",
+                statusProcessing: "Processing, please wait...", statusDone: "Completed ✓",
+                lblRange: "Page range (e.g. 1-3, 5):", lblPassword: "Password:", lblOrder: "New order (e.g. 3,1,2):", lblPos: "Number Position:",
+                posBC: "Bottom Center", posBR: "Bottom Right", posBL: "Bottom Left",
+                
+                pagePrivacyTitle: "Privacy Policy",
+                pagePrivacyHtml: `
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">1. File Privacy & Processing</h3>
+                    <p>At World PDF, we believe your document privacy is paramount. All file processing operations (merging, splitting, conversion, etc.) happen <strong>locally within your browser</strong>. We do not upload, transfer, or store any of your files on our servers.</p>
+                    
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">2. Cookies and Google Ads</h3>
+                    <p>Our site uses Google AdSense as a financial support resource to keep the service free. Google, as a third-party vendor, uses cookies to serve ads on our site.</p>
+                    <ul class="list-disc list-inside mt-2 space-y-1">
+                        <li>Google's use of the DART cookie enables it to serve ads to users based on their visit to our site and other sites on the Internet.</li>
+                        <li>Users may opt out of the use of the DART cookie by visiting the <a href="https://policies.google.com/technologies/ads" target="_blank" class="text-primary hover:underline">Google ad and content network privacy policy</a>.</li>
+                    </ul>
+                    
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">3. Log Files</h3>
+                    <p>Like many standard Web sites, we use log files. This includes IP addresses, browser type, internet service provider (ISP), referring/exit pages, and date/time stamps to analyze trends and administer the site. This information is not linked to anything personally identifiable.</p>
+
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">4. Changes to Privacy Policy</h3>
+                    <p>We reserve the right to update this privacy policy at any time. Any changes will be posted on this page.</p>
+                `,
+                pageTermsTitle: "Terms of Use",
+                pageTermsHtml: `
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white">1. Acceptance of Terms</h3>
+                    <p>By accessing and using World PDF, you agree to be bound by these Terms of Use. If you do not agree to any part of these terms, please stop using the site.</p>
+                    
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">2. Permitted Use</h3>
+                    <p>The site is provided for personal and professional use for document processing. You are prohibited from using the site for any illegal purposes or attempting to exploit vulnerabilities in the service.</p>
+                    
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">3. Disclaimer</h3>
+                    <p>The tools are provided "as is" without any express or implied warranties. We are not liable for any damage or loss of data resulting from the use of the site. It is always recommended to keep a backup of your original files before processing.</p>
+
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mt-4">4. Intellectual Property</h3>
+                    <p>All design rights, trademarks, and content displayed on the site (excluding third-party ads and content) are owned by World PDF.</p>
+                `
+            }
+        };
+
+        const toolsData = [
+            { id: 'merge', cat: 'organize', icon: 'fa-layer-group', color: 'purple', accept: 'application/pdf,.pdf', multi: true, actionBtn: 'btnActionMerge',
+              ar: { t: 'دمج PDF', d: 'دمج عدة ملفات في ملف واحد' }, en: { t: 'Merge PDF', d: 'Combine multiple files into one' } },
+            { id: 'split', cat: 'organize', icon: 'fa-scissors', color: 'purple', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+              ar: { t: 'تقسيم PDF', d: 'استخراج صفحات أو نطاقات' }, en: { t: 'Split PDF', d: 'Extract pages or ranges' } },
+            { id: 'delete', cat: 'organize', icon: 'fa-trash-can', color: 'purple', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+              ar: { t: 'حذف صفحات', d: 'اختيار الصفحات وإزالتها' }, en: { t: 'Delete Pages', d: 'Select and remove pages' } },
+            { id: 'reorder', cat: 'organize', icon: 'fa-sort', color: 'purple', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+              ar: { t: 'إعادة ترتيب الصفحات', d: 'تحديد ترتيب الصفحات' }, en: { t: 'Reorder Pages', d: 'Set a new page order' } },
+            { id: 'compress', cat: 'optimize', icon: 'fa-compress', color: 'blue', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+              ar: { t: 'ضغط PDF', d: 'إعادة حفظ PDF لتحسين الحجم' }, en: { t: 'Compress PDF', d: 'Re-save PDF to optimize size' } },
+            { id: 'images', cat: 'toPDF', icon: 'fa-image', color: 'green', accept: 'image/jpeg,image/png,image/webp,image/*,.jpg,.jpeg,.png,.webp', multi: true, actionBtn: 'btnActionConvert', type: 'img',
+              ar: { t: 'صور إلى PDF', d: 'JPG وPNG وWebP إلى PDF' }, en: { t: 'Images to PDF', d: 'JPG, PNG and WebP to PDF' } },
+            { id: 'word', cat: 'fromPDF', icon: 'fa-file-word', color: 'blue', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionConvert',
+              ar: { t: 'PDF إلى Word', d: 'استخراج النص إلى DOCX' }, en: { t: 'PDF to Word', d: 'Extract text to DOCX' } },
+            { id: 'excel', cat: 'toPDF', icon: 'fa-file-excel', color: 'green', accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.xlsx,.xls', multi: true, actionBtn: 'btnActionConvert', type: 'excel',
+              ar: { t: 'Excel إلى PDF', d: 'تحويل أوراق Excel إلى PDF' }, en: { t: 'Excel to PDF', d: 'Convert Excel sheets to PDF' } },
+            { id: 'ppt', cat: 'fromPDF', icon: 'fa-file-powerpoint', color: 'orange', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionConvert',
+              ar: { t: 'PDF إلى PPT', d: 'كل صفحة في شريحة' }, en: { t: 'PDF to PPT', d: 'Each page becomes a slide' } },
+            { id: 'protect', cat: 'security', icon: 'fa-lock', color: 'red', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionProtect',
+              ar: { t: 'حماية PDF', d: 'تشفير PDF بكلمة مرور' }, en: { t: 'Protect PDF', d: 'Encrypt PDF with a password' } },
+            { id: 'unlock', cat: 'security', icon: 'fa-unlock', color: 'red', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+              ar: { t: 'فك حماية PDF', d: 'فتح ملف محمي بكلمة مرور' }, en: { t: 'Unlock PDF', d: 'Unlock with known password' } },
+            { id: 'numbers', cat: 'organize', icon: 'fa-hashtag', color: 'yellow', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+              ar: { t: 'أرقام الصفحات', d: 'إضافة أرقام للصفحات' }, en: { t: 'Page Numbers', d: 'Add page numbers' } }
+        ];
+
+        const $ = s => document.querySelector(s);
+
+        // --- STREAMING_CHUNK:UI Updaters (i18n & Theme) ---
+        function renderGrid() {
+            const grid = $('#toolsGrid');
+            grid.innerHTML = toolsData.map(t => {
+                const colors = {
+                    purple: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
+                    blue: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
+                    green: 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400',
+                    orange: 'bg-orange-100 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400',
+                    red: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+                    yellow: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400'
+                };
+                return `
+                <div class="tool-card bg-white dark:bg-darkCard border border-gray-200 dark:border-darkBorder rounded-2xl p-5 cursor-pointer hover:border-primary hover:shadow-lg dark:hover:shadow-primary/5 transition-all group flex items-center gap-4" data-cat="${t.cat}" onclick="openTool('${t.id}')">
+                    <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center text-xl transition-transform group-hover:scale-110 ${colors[t.color]}">
+                        <i class="fa-solid ${t.icon}"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-900 dark:text-white text-lg">${t[APP.lang].t}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">${t[APP.lang].d}</p>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function applyLanguage() {
+            document.documentElement.lang = APP.lang;
+            document.documentElement.dir = APP.lang === 'ar' ? 'rtl' : 'ltr';
+            $('#langBtn').textContent = APP.lang === 'ar' ? 'EN' : 'AR';
+            
+            // Text Replacements
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (dict[APP.lang][key]) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                         el.placeholder = dict[APP.lang][key];
+                    } else {
+                         el.innerHTML = dict[APP.lang][key]; // innerHTML used to keep icons/spans if present
+                    }
+                }
+            });
+            
+            // Special cases (innerHTML with links)
+            $('#cookieText').innerHTML = dict[APP.lang].cookieMsg;
+
+            renderGrid();
+            if(APP.currentTool) {
+                const tool = toolsData.find(t => t.id === APP.currentTool);
+                $('#modalTitle').innerHTML = `<i class="fa-solid ${tool.icon} text-${tool.color}-500"></i> ${tool[APP.lang].t}`;
+                $('#actionBtnText').textContent = dict[APP.lang][tool.actionBtn] || dict[APP.lang].btnActionExecute;
+                updateExtraControlsLang();
+            }
+        }
+
+        function applyTheme() {
+            if (APP.theme === 'dark') {
+                document.documentElement.classList.add('dark');
+                $('#themeBtn').innerHTML = '<i class="fa-solid fa-sun"></i>';
+            } else {
+                document.documentElement.classList.remove('dark');
+                $('#themeBtn').innerHTML = '<i class="fa-solid fa-moon"></i>';
+            }
+        }
+
+        // --- STREAMING_CHUNK:Event Listeners & Utils ---
+        $('#langBtn').onclick = () => { APP.lang = APP.lang === 'ar' ? 'en' : 'ar'; localStorage.setItem('wpdf-lang', APP.lang); applyLanguage(); };
+        $('#themeBtn').onclick = () => { APP.theme = APP.theme === 'dark' ? 'light' : 'dark'; localStorage.setItem('wpdf-theme', APP.theme); applyTheme(); };
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.onclick = () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                const cat = btn.getAttribute('data-cat');
+                document.querySelectorAll('.tool-card').forEach(card => {
+                    card.style.display = (cat === 'all' || card.getAttribute('data-cat') === cat) ? 'flex' : 'none';
+                });
+            };
+        });
+
+        window.onscroll = () => {
+            const btn = $('#backTop');
+            if (window.scrollY > 300) btn.classList.remove('opacity-0', 'pointer-events-none');
+            else btn.classList.add('opacity-0', 'pointer-events-none');
+        };
+        $('#backTop').onclick = () => window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        function showToast(msg, isError = false) {
+            const t = $('#toast');
+            $('#toastMsg').textContent = msg;
+            $('#toastIcon').className = `fa-solid ${isError ? 'fa-circle-exclamation text-red-400' : 'fa-circle-check text-green-400'}`;
+            t.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            setTimeout(() => t.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none'), 3500);
+        }
+
+        // --- STREAMING_CHUNK:Cookies & Content Modals (AdSense Setup) ---
+        function checkCookies() {
+            if (!localStorage.getItem('cookieConsent')) {
+                setTimeout(() => {
+                    $('#cookieBanner').classList.remove('translate-y-full');
+                }, 1000);
+            }
+        }
+        function acceptCookies() {
+            localStorage.setItem('cookieConsent', 'true');
+            $('#cookieBanner').classList.add('translate-y-full');
+        }
+
+        function openPage(page) {
+            const m = $('#pageModal');
+            let titleStr = page === 'privacy' ? 'pagePrivacyTitle' : 'pageTermsTitle';
+            let contentStr = page === 'privacy' ? 'pagePrivacyHtml' : 'pageTermsHtml';
+            
+            $('#pageTitle').textContent = dict[APP.lang][titleStr];
+            $('#pageContent').innerHTML = dict[APP.lang][contentStr];
+            
+            m.classList.remove('modal-hidden');
+        }
+        function closePage() {
+            $('#pageModal').classList.add('modal-hidden');
+        }
+        $('#pageModal').addEventListener('mousedown', e => { if (e.target === $('#pageModal')) closePage(); });
+
+        $('#contactForm').onsubmit = (e) => {
+            e.preventDefault();
+            // Simulate form submission to keep it frontend only
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = `<div class="spinner border-t-white"></div>`;
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                e.target.reset();
+                showToast(dict[APP.lang].formSuccess);
+            }, 1500);
+        };
+
+
+        // --- STREAMING_CHUNK:File Operations & Tool Modals ---
+        const modal = $('#modal');
+        const fileInput = $('#fileInput');
+        const dropzone = $('#dropzone');
+
+        function openTool(toolId) {
+            APP.currentTool = toolId;
+            APP.files = [];
+            const tool = toolsData.find(t => t.id === toolId);
+            
+            $('#modalTitle').innerHTML = `<i class="fa-solid ${tool.icon} text-${tool.color}-500"></i> ${tool[APP.lang].t}`;
+            $('#actionBtnText').textContent = dict[APP.lang][tool.actionBtn] || dict[APP.lang].btnActionExecute;
+            
+            const subType = tool.type === 'img' ? 'dropSubImg' : tool.type === 'excel' ? 'dropSubExcel' : 'dropSubPDF';
+            $('#dropSubtitle').setAttribute('data-i18n', subType);
+            $('#dropSubtitle').textContent = dict[APP.lang][subType];
+            
+            fileInput.accept = tool.accept;
+            tool.multi ? fileInput.setAttribute('multiple', '') : fileInput.removeAttribute('multiple');
+            
+            renderFiles();
+            $('#resultBox').classList.add('hidden');
+            $('#statusText').textContent = '';
+            $('#actionBtn').disabled = false;
+            $('#actionBtn').innerHTML = `<span id="actionBtnText">${dict[APP.lang][tool.actionBtn] || dict[APP.lang].btnActionExecute}</span>`;
+            
+            buildExtraControls(toolId);
+            modal.classList.remove('modal-hidden');
+        }
+
+        function closeTool() { modal.classList.add('modal-hidden'); APP.currentTool = null; APP.files = []; fileInput.value = ''; }
+        modal.addEventListener('mousedown', e => { if (e.target === modal) closeTool(); });
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => dropzone.addEventListener(evt, e => { e.preventDefault(); e.stopPropagation(); }));
+        ['dragenter', 'dragover'].forEach(evt => dropzone.addEventListener(evt, () => dropzone.classList.add('border-primary', 'bg-red-50', 'dark:bg-red-900/10')));
+        ['dragleave', 'drop'].forEach(evt => dropzone.addEventListener(evt, () => dropzone.classList.remove('border-primary', 'bg-red-50', 'dark:bg-red-900/10')));
+        dropzone.addEventListener('drop', e => handleFiles(e.dataTransfer.files));
+        dropzone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', e => { handleFiles(e.target.files); e.target.value = ''; });
+
+        function handleFiles(files) {
+            if (!files.length) return;
+            const tool = toolsData.find(t => t.id === APP.currentTool);
+            let newFiles = Array.from(files);
+            if(!tool.multi) newFiles = [newFiles[0]];
+            tool.multi ? APP.files = [...APP.files, ...newFiles] : APP.files = newFiles;
+            renderFiles();
+            $('#resultBox').classList.add('hidden');
+        }
+
+        function removeFile(index) { APP.files.splice(index, 1); renderFiles(); }
+
+        function renderFiles() {
+            const list = $('#fileList');
+            if(!APP.files.length) { list.innerHTML = ''; return; }
+            list.innerHTML = APP.files.map((f, i) => `
+                <div class="flex items-center justify-between bg-gray-100 dark:bg-[#1e293b] p-3 rounded-lg border border-gray-200 dark:border-darkBorder group">
+                    <div class="flex items-center gap-3 overflow-hidden">
+                        <i class="fa-solid fa-file text-gray-400"></i>
+                        <div class="flex flex-col overflow-hidden">
+                            <span class="text-sm font-bold truncate" title="${f.name}">${f.name}</span>
+                            <span class="text-xs text-gray-500">${(f.size / 1024 / 1024).toFixed(2)} MB</span>
+                        </div>
+                    </div>
+                    <button onclick="event.stopPropagation(); removeFile(${i})" class="text-gray-400 hover:text-red-500 p-2 rounded-md hover:bg-white dark:hover:bg-darkCard transition-colors">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function buildExtraControls(toolId) {
+            const box = $('#toolControls');
+            box.innerHTML = '';
+            box.classList.remove('hidden');
+            const inputClass = "w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#0b1120] focus:border-primary focus:ring-1 focus:ring-primary outline-none";
+            
+            if (['split', 'delete', 'reorder'].includes(toolId)) {
+                let lbl = toolId === 'reorder' ? 'lblOrder' : 'lblRange';
+                box.innerHTML = `<label class="block text-sm font-bold mb-1" id="lblExt1" data-i18n="${lbl}">${dict[APP.lang][lbl]}</label><input type="text" id="toolInputVal" class="${inputClass}" dir="ltr" placeholder="1-3, 5, 7">`;
+            } else if (toolId === 'protect') {
+                box.innerHTML = `<label class="block text-sm font-bold mb-1" data-i18n="lblPassword">${dict[APP.lang].lblPassword}</label><input type="password" id="toolInputVal" class="${inputClass}" dir="ltr">`;
+            } else if (toolId === 'numbers') {
+                box.innerHTML = `<label class="block text-sm font-bold mb-1" data-i18n="lblPos">${dict[APP.lang].lblPos}</label><select id="toolInputVal" class="${inputClass}">
+                    <option value="bottom-center" data-i18n="posBC">${dict[APP.lang].posBC}</option>
+                    <option value="bottom-right" data-i18n="posBR">${dict[APP.lang].posBR}</option>
+                    <option value="bottom-left" data-i18n="posBL">${dict[APP.lang].posBL}</option></select>`;
+            } else { box.classList.add('hidden'); }
+        }
+
+        function updateExtraControlsLang() {
+            const toolId = APP.currentTool;
+             if (['split', 'delete', 'reorder'].includes(toolId)) {
+                let lbl = toolId === 'reorder' ? 'lblOrder' : 'lblRange';
+                const l = $('#lblExt1'); if(l) { l.setAttribute('data-i18n', lbl); l.textContent = dict[APP.lang][lbl]; }
+             }
+        }
+
+        // --- STREAMING_CHUNK:Processing Engine ---
+        let currentResultUrl = null;
+        function provideDownload(bytes, filename, type = 'application/pdf') {
+            if(currentResultUrl) URL.revokeObjectURL(currentResultUrl);
+            const blob = new Blob([bytes], { type });
+            currentResultUrl = URL.createObjectURL(blob);
+            $('#resultBox').classList.remove('hidden');
+            const btn = $('#downloadBtn');
+            const newBtn = btn.cloneNode(true);
+            btn.parentNode.replaceChild(newBtn, btn);
+            newBtn.onclick = () => { const a = document.createElement('a'); a.href = currentResultUrl; a.download = filename; a.click(); };
+        }
+
+        async function loadPdfDoc(file, password) {
+            return await PDFLib.PDFDocument.load(await getFileBuffer(file), password !== undefined ? { password } : undefined);
+        }
+
+        function parseRange(s, maxPages) {
+            let a = [];
+            if(!s) return a;
+            for (const x of s.split(',').map(x => x.trim()).filter(Boolean)) {
+                if (x.includes('-')) {
+                    let [u, v] = x.split('-').map(Number);
+                    if(u && v) for (let i = Math.min(u,v); i <= Math.max(u,v); i++) if (i >= 1 && i <= maxPages) a.push(i - 1);
+                } else {
+                    let i = Number(x);
+                    if (!isNaN(i) && i >= 1 && i <= maxPages) a.push(i - 1);
+                }
+            }
+            return [...new Set(a)];
+        }
+
+        $('#actionBtn').onclick = async () => {
+            if (!APP.files.length) { showToast(dict[APP.lang].errNoFiles, true); return; }
+            const btn = $('#actionBtn'); const status = $('#statusText'); const toolId = APP.currentTool;
+            btn.disabled = true; const originalBtnHtml = btn.innerHTML;
+            btn.innerHTML = `<div class="spinner"></div>`; status.textContent = dict[APP.lang].statusProcessing; $('#resultBox').classList.add('hidden');
+
+            try {
+                if (toolId === 'merge') await processMerge();
+                else if (toolId === 'images') await processImages();
+                else if (toolId === 'split') await processSplit();
+                else if (['delete', 'reorder', 'numbers', 'compress'].includes(toolId)) await processEdit(toolId);
+                else if (toolId === 'protect') await processProtect();
+                else if (toolId === 'unlock') await processUnlock();
+                else if (toolId === 'word') await processWord();
+                else if (toolId === 'excel') await processExcel();
+                else if (toolId === 'ppt') await processPPT();
+                status.textContent = dict[APP.lang].statusDone;
+            } catch (error) {
+                console.error(error); showToast(error.message || dict[APP.lang].errGeneral, true); status.textContent = '';
+            } finally {
+                btn.disabled = false; btn.innerHTML = originalBtnHtml;
+            }
+        };
+
+        // Tasks implementations
+        async function processMerge() {
+            const out = await PDFLib.PDFDocument.create();
+            for (const f of APP.files) {
+                const p = await loadPdfDoc(f);
+                const pages = await out.copyPages(p, p.getPageIndices());
+                pages.forEach(pg => out.addPage(pg));
+            }
+            provideDownload(await out.save({ useObjectStreams: true }), 'merged.pdf');
+        }
+
+        async function processImages() {
+            const out = await PDFLib.PDFDocument.create();
+            for (const f of APP.files) {
+                const b = await getFileBuffer(f);
+                const img = f.type === 'image/png' ? await out.embedPng(b) : await out.embedJpg(b);
+                const dim = img.scale(1);
+                const page = out.addPage([dim.width, dim.height]);
+                page.drawImage(img, { x: 0, y: 0, width: dim.width, height: dim.height });
+            }
+            provideDownload(await out.save({ useObjectStreams: true }), 'images_to_pdf.pdf');
+        }
+
+        async function processSplit() {
+            const p = await loadPdfDoc(APP.files[0]);
+            const nums = parseRange($('#toolInputVal').value, p.getPageCount());
+            if(!nums.length) throw new Error('Invalid page range');
+            const out = await PDFLib.PDFDocument.create();
+            const pages = await out.copyPages(p, nums);
+            pages.forEach(pg => out.addPage(pg));
+            provideDownload(await out.save({ useObjectStreams: true }), 'split.pdf');
+        }
+
+        async function processEdit(type) {
+            const p = await loadPdfDoc(APP.files[0]); const n = p.getPageCount(); let idx = [...Array(n).keys()];
+            if (type === 'delete') {
+                const del = parseRange($('#toolInputVal').value, n); idx = idx.filter(i => !del.includes(i));
+                if(!idx.length) throw new Error('Cannot delete all pages');
+            } else if (type === 'reorder') {
+                const r = parseRange($('#toolInputVal').value, n); if (r.length > 0) idx = r; 
+            }
+            const out = await PDFLib.PDFDocument.create();
+            const pages = await out.copyPages(p, idx);
+            pages.forEach(pg => out.addPage(pg));
+            if (type === 'numbers') {
+                const pos = $('#toolInputVal').value;
+                out.getPages().forEach((pg, i) => {
+                    const { width, height } = pg.getSize(); let x = width / 2;
+                    if (pos === 'bottom-right') x = width - 35; if (pos === 'bottom-left') x = 35;
+                    pg.drawText(String(i + 1), { x: x - 5, y: 20, size: 12, color: PDFLib.rgb(0.2, 0.2, 0.2) });
+                });
+            }
+            provideDownload(await out.save({ useObjectStreams: true }), `${type}_result.pdf`);
+        }
+
+        async function processProtect() {
+            const pwd = $('#toolInputVal').value.trim(); if (!pwd) throw new Error(dict[APP.lang].errPassword);
+            const p = await loadPdfDoc(APP.files[0]);
+            const pdfBytes = await p.save({ encrypt: { userPassword: pwd, ownerPassword: pwd + 'admin', permissions: { printing: 'highResolution', modifying: false, copying: false } }});
+            provideDownload(pdfBytes, 'protected.pdf');
+        }
+
+        async function processUnlock() {
+            const pwd = prompt(APP.lang === 'ar' ? 'أدخل كلمة المرور الحالية لفك الحماية:' : 'Enter current password to unlock:');
+            if (pwd === null) throw new Error('Cancelled');
+            const p = await loadPdfDoc(APP.files[0], pwd);
+            provideDownload(await p.save(), 'unlocked.pdf');
+        }
+
+        async function processWord() {
+            if (!APP.pdfjsReady) throw new Error(dict[APP.lang].errPdfjs || "PDF.js Error");
+            const pdfData = new Uint8Array(await getFileBuffer(APP.files[0]));
+            const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+            let children = [];
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const pg = await pdf.getPage(i); const content = await pg.getTextContent();
+                children.push(new docx.Paragraph({ children: [new docx.TextRun(content.items.map(x => x.str).join(' '))] }));
+            }
+            const doc = new docx.Document({ sections: [{ properties: {}, children: children }] });
+            provideDownload(await (await docx.Packer.toBlob(doc)).arrayBuffer(), 'converted.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        }
+
+        async function processExcel() {
+            const wb = XLSX.read(await getFileBuffer(APP.files[0]), { type: 'array' });
+            const { jsPDF } = window.jspdf; const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+            pdf.setFontSize(10);
+            wb.SheetNames.forEach((sn, si) => {
+                if (si > 0) pdf.addPage();
+                const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1 }); let y = 15;
+                pdf.setFontSize(14); pdf.text(String(sn), 10, y); y += 10; pdf.setFontSize(9);
+                rows.forEach(r => {
+                    pdf.text(r.map(x => String(x != null ? x : '')).join(' | ').substring(0, 120), 10, y); y += 6;
+                    if (y > 280) { pdf.addPage(); y = 15; }
+                });
+            });
+            provideDownload(pdf.output('arraybuffer'), 'from_excel.pdf');
+        }
+
+        async function processPPT() {
+            if (!APP.pdfjsReady) throw new Error(dict[APP.lang].errPdfjs || "PDF.js Error");
+            const pdfData = new Uint8Array(await getFileBuffer(APP.files[0]));
+            const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
+            const ppt = new PptxGenJS(); ppt.layout = 'LAYOUT_WIDE';
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const pg = await pdf.getPage(i); const vp = pg.getViewport({ scale: 1.5 });
+                const canvas = document.createElement('canvas'); canvas.width = vp.width; canvas.height = vp.height;
+                await pg.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
+                ppt.addSlide().addImage({ data: canvas.toDataURL('image/jpeg', 0.85), x: 0, y: 0, w: '100%', h: '100%' });
+            }
+            provideDownload(await ppt.write({ outputType: 'arraybuffer' }), 'slides.pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
+        }
+
+        // --- STREAMING_CHUNK:App Initialization ---
+        applyTheme();
+        applyLanguage();
+        checkCookies(); // Check and show cookie banner if needed
+        
+    </script>
+</body>
+</html>
