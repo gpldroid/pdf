@@ -24,16 +24,13 @@ function renderGrid() {
             yellow: 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400'
         };
         return `
-        <div class="tool-card bg-white dark:bg-darkCard border border-gray-200 dark:border-darkBorder rounded-2xl p-5 cursor-pointer hover:border-primary hover:shadow-lg dark:hover:shadow-primary/5 transition-all group flex items-center gap-4" data-cat="${t.cat}" onclick="openTool('${t.id}')">
-            <div class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center text-xl transition-transform group-hover:scale-110 ${colors[t.color]}">
-                <i class="fa-solid ${t.icon}"></i>
-            </div>
-            <div>
-                <h3 class="font-bold text-gray-900 dark:text-white text-lg">${t[APP.lang].t}</h3>
-                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">${t[APP.lang].d}</p>
-            </div>
-        </div>`;
-    }).join('');
+        <div class="tool-card bg-white dark:bg-darkCard border border-gray-200 dark:border-darkBorder rounded-2xl p-5 hover:border-primary hover:shadow-lg dark:hover:shadow-primary/5 transition-all group flex items-center gap-4" data-cat="${t.cat}">
+            <button type="button" class="text-right flex-1 min-w-0 flex items-center gap-4" onclick="openTool('${t.id}')">
+                <span class="w-12 h-12 rounded-xl flex-shrink-0 flex items-center justify-center text-xl transition-transform group-hover:scale-110 ${colors[t.color]}"><i class="fa-solid ${t.icon}"></i></span>
+                <span class="min-w-0"><span class="block font-bold text-gray-900 dark:text-white text-lg">${t[APP.lang].t}</span><span class="block text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">${t[APP.lang].d}</span></span>
+            </button>
+            <a href="./tools/${t.id}.html" class="shrink-0 text-primary hover:text-primaryDark p-2" aria-label="${t[APP.lang].t}" title="${t[APP.lang].t}"><i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+        </div>`;   }).join('');
 }
 
 function applyLanguage() {
@@ -420,6 +417,11 @@ async function processPPT() {
 applyTheme();
 applyLanguage();
 checkCookies(); // Check and show cookie banner if needed
+
+const requestedTool = new URLSearchParams(location.search).get('tool');
+if (requestedTool && toolsData.some(t => t.id === requestedTool)) {
+    setTimeout(() => openTool(requestedTool), 0);
+}
 
 // Public handlers used by inline HTML attributes and dynamically generated tool cards.
 Object.assign(window, { openTool, closeTool, removeFile, acceptCookies, openPage, closePage });
