@@ -11,6 +11,12 @@ const required = [
   'src/js/core/i18n.js',
   'src/js/core/tools.js',
   'src/js/core/dom.js',
+  'src/js/core/theme.js',
+  'src/js/core/pdf-loader.js',
+  'src/js/core/library-loader.js',
+  'src/js/core/history.js',
+  'src/js/page-theme.js',
+  'sw.js',
   'legal/privacy-policy.html',
   'legal/terms-of-service.html',
   'legal/cookie-policy.html',
@@ -18,7 +24,12 @@ const required = [
   'robots.txt',
   'sitemap.xml',
   'site.webmanifest',
-  '404.html'
+  '404.html',
+  'tools/rotate.html',
+  'tools/watermark.html',
+  'tools/extract.html',
+  'tools/pdf-images.html',
+  'tools/text.html'
 ];
 
 const errors = [];
@@ -27,7 +38,7 @@ for (const file of required) {
 }
 
 const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-for (const ref of ['./src/css/main.css', './src/js/main.js', './assets/icons/favicon.svg', './site.webmanifest']) {
+for (const ref of ['./src/css/main.css', './src/js/main.js', './assets/icons/favicon.svg', './site.webmanifest', './sw.js', './assets/og-image.svg']) {
   if (!index.includes(ref)) errors.push(`index.html is missing reference: ${ref}`);
 }
 
@@ -53,4 +64,7 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`Static site validation passed (${required.length} required paths checked).`);
+const toolPages=['merge','split','delete','reorder','compress','images','word','excel','ppt','protect','unlock','numbers','rotate','watermark','extract','pdf-images','text'];
+for (const id of toolPages) { if (!fs.existsSync(path.join(root,'tools',`${id}.html`))) errors.push(`Missing tool page: ${id}`); }
+if (errors.length) { console.error(errors.join('\\n')); process.exit(1); }
+console.log(`Static site validation passed (${required.length} required paths checked, ${toolPages.length} tool pages checked).`);
