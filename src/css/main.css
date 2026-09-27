@@ -38,3 +38,19 @@ button, a, input, textarea, select { touch-action: manipulation; }
 .prose-page h2 { font-size: clamp(1.2rem, 3.5vw, 1.55rem); font-weight: 800; margin-top: 2rem; margin-bottom: .75rem; }
 .prose-page p, .prose-page li { line-height: 1.9; }
 .tool-hero { background: linear-gradient(135deg, #ef4444, #991b1b); }
+
+
+/* Theme lifecycle: avoid an animated flash during the initial theme selection. */
+html {
+  color-scheme: light;
+  background: #f9fafb;
+}
+
+html.dark {
+  color-scheme: dark;
+  background: #0b1120;
+}
+
+html.theme-ready body {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
