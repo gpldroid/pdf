@@ -222,9 +222,13 @@ function buildExtraControls(toolId) {
     box.classList.remove('hidden');
     const inputClass = "w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#0b1120] focus:border-primary focus:ring-1 focus:ring-primary outline-none";
 
-    if (['split', 'delete', 'reorder'].includes(toolId)) {
+    if (['split', 'delete', 'reorder', 'extract'].includes(toolId)) {
         let lbl = toolId === 'reorder' ? 'lblOrder' : 'lblRange';
         box.innerHTML = `<label class="block text-sm font-bold mb-1" id="lblExt1" data-i18n="${lbl}">${dict[APP.lang][lbl]}</label><input type="text" id="toolInputVal" class="${inputClass}" dir="ltr" placeholder="1-3, 5, 7">`;
+    } else if (toolId === 'rotate') {
+        box.innerHTML = `<label class="block text-sm font-bold mb-1">${dict[APP.lang].lblRotate}</label><select id="toolInputVal" class="${inputClass}"><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select>`;
+    } else if (toolId === 'watermark') {
+        box.innerHTML = `<label class="block text-sm font-bold mb-1">${dict[APP.lang].lblWatermark}</label><input type="text" id="toolInputVal" class="${inputClass}" placeholder="${dict[APP.lang].watermarkPlaceholder}">`;
     } else if (toolId === 'protect') {
         box.innerHTML = `<label class="block text-sm font-bold mb-1" data-i18n="lblPassword">${dict[APP.lang].lblPassword}</label><input type="password" id="toolInputVal" class="${inputClass}" dir="ltr">`;
     } else if (toolId === 'numbers') {
@@ -237,7 +241,7 @@ function buildExtraControls(toolId) {
 
 function updateExtraControlsLang() {
     const toolId = APP.currentTool;
-    if (['split', 'delete', 'reorder'].includes(toolId)) {
+    if (['split', 'delete', 'reorder', 'extract'].includes(toolId)) {
         let lbl = toolId === 'reorder' ? 'lblOrder' : 'lblRange';
         const l = $('#lblExt1');
         if (l) {
@@ -314,6 +318,11 @@ $('#actionBtn').onclick = async () => {
         else if (toolId === 'word') await processWord();
         else if (toolId === 'excel') await processExcel();
         else if (toolId === 'ppt') await processPPT();
+        else if (toolId === 'rotate') await processRotate();
+        else if (toolId === 'watermark') await processWatermark();
+        else if (toolId === 'extract') await processExtract();
+        else if (toolId === 'pdf-images') await processPdfImages();
+        else if (toolId === 'text') await processText();
         status.textContent = dict[APP.lang].statusDone;
         addHistory(toolId, APP.files);
         finishProgress();
@@ -401,6 +410,12 @@ async function processProtect() {
     const pdfBytes = await p.save({ encrypt: { userPassword: pwd, ownerPassword: pwd + 'admin', permissions: { printing: 'highResolution', modifying: false, copying: false } }});
     updateProgress(100,100); provideDownload(pdfBytes, 'protected.pdf'); addHistory('protect',APP.files);
 }
+
+async function processRotate(){ await ensureLibrary('pdfLib'); const p=await loadPdfDoc(APP.files[0]); const deg=Number($('#toolInputVal').value)||90; p.getPages().forEach((pg,i)=>{checkCancelled(); pg.setRotation(PDFLib.degrees(pg.getRotation().angle+deg)); updateProgress(i+1,p.getPageCount());}); provideDownload(await p.save({useObjectStreams:true}),'rotated.pdf'); addHistory('rotate',APP.files); }
+async function processWatermark(){ await ensureLibrary('pdfLib'); const text=$('#toolInputVal').value.trim(); if(!text) throw new Error(dict[APP.lang].errWatermark); const p=await loadPdfDoc(APP.files[0]); const pages=p.getPages(); pages.forEach((pg,i)=>{checkCancelled(); const {width,height}=pg.getSize(); pg.drawText(text,{x:width/2-40,y:height/2,size:28,opacity:.18,color:PDFLib.rgb(.55,.55,.55)}); updateProgress(i+1,pages.length);}); provideDownload(await p.save({useObjectStreams:true}),'watermarked.pdf'); addHistory('watermark',APP.files); }
+async function processExtract(){ await ensureLibrary('pdfLib'); const p=await loadPdfDoc(APP.files[0]); const nums=parseRange($('#toolInputVal').value,p.getPageCount()); if(!nums.length) throw new Error(dict[APP.lang].errRange); const out=await PDFLib.PDFDocument.create(); const pages=await out.copyPages(p,nums); pages.forEach(pg=>out.addPage(pg)); provideDownload(await out.save({useObjectStreams:true}),'extracted.pdf'); addHistory('extract',APP.files); }
+async function processPdfImages(){ await ensurePdfJs(); APP.pdfjsReady=true; const data=new Uint8Array(await getFileBuffer(APP.files[0])); const pdf=await pdfjsLib.getDocument({data}).promise; const zipless=[]; for(let i=1;i<=pdf.numPages;i++){checkCancelled(); const pg=await pdf.getPage(i); const vp=pg.getViewport({scale:1.5}); const canvas=document.createElement('canvas'); canvas.width=vp.width; canvas.height=vp.height; await pg.render({canvasContext:canvas.getContext('2d'),viewport:vp}).promise; const blob=await new Promise(res=>canvas.toBlob(res,'image/png')); zipless.push({name:'page-'+i+'.png',blob}); updateProgress(i,pdf.numPages);} if(zipless.length===1){provideDownload(await zipless[0].blob.arrayBuffer(),zipless[0].name,'image/png');} else {const manifest=JSON.stringify({message:'Multiple PNG pages generated locally',files:zipless.map(x=>x.name)}); provideDownload(new TextEncoder().encode(manifest),'pdf-images.json','application/json'); showToast(dict[APP.lang].multiImageNote); } addHistory('pdf-images',APP.files); }
+async function processText(){ await ensurePdfJs(); APP.pdfjsReady=true; const data=new Uint8Array(await getFileBuffer(APP.files[0])); const pdf=await pdfjsLib.getDocument({data}).promise; let text=''; for(let i=1;i<=pdf.numPages;i++){checkCancelled(); const pg=await pdf.getPage(i); const c=await pg.getTextContent(); text+=`\n--- Page ${i} ---\n`+c.items.map(x=>x.str).join(' '); updateProgress(i,pdf.numPages);} provideDownload(new TextEncoder().encode(text.trim()),'extracted.txt','text/plain;charset=utf-8'); addHistory('text',APP.files); }
 
 async function processUnlock() {
     await ensureLibrary('pdfLib');
