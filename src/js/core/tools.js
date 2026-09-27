@@ -1,0 +1,27 @@
+const toolsData = [
+    { id: 'merge', cat: 'organize', icon: 'fa-layer-group', color: 'purple', accept: 'application/pdf,.pdf', multi: true, actionBtn: 'btnActionMerge',
+      ar: { t: 'دمج PDF', d: 'دمج عدة ملفات في ملف واحد' }, en: { t: 'Merge PDF', d: 'Combine multiple files into one' } },
+    { id: 'split', cat: 'organize', icon: 'fa-scissors', color: 'purple', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+      ar: { t: 'تقسيم PDF', d: 'استخراج صفحات أو نطاقات' }, en: { t: 'Split PDF', d: 'Extract pages or ranges' } },
+    { id: 'delete', cat: 'organize', icon: 'fa-trash-can', color: 'purple', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+      ar: { t: 'حذف صفحات', d: 'اختيار الصفحات وإزالتها' }, en: { t: 'Delete Pages', d: 'Select and remove pages' } },
+    { id: 'reorder', cat: 'organize', icon: 'fa-sort', color: 'purple', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+      ar: { t: 'إعادة ترتيب الصفحات', d: 'تحديد ترتيب الصفحات' }, en: { t: 'Reorder Pages', d: 'Set a new page order' } },
+    { id: 'compress', cat: 'optimize', icon: 'fa-compress', color: 'blue', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+      ar: { t: 'ضغط PDF', d: 'إعادة حفظ PDF لتحسين الحجم' }, en: { t: 'Compress PDF', d: 'Re-save PDF to optimize size' } },
+    { id: 'images', cat: 'toPDF', icon: 'fa-image', color: 'green', accept: 'image/jpeg,image/png,image/webp,image/*,.jpg,.jpeg,.png,.webp', multi: true, actionBtn: 'btnActionConvert', type: 'img',
+      ar: { t: 'صور إلى PDF', d: 'JPG وPNG وWebP إلى PDF' }, en: { t: 'Images to PDF', d: 'JPG, PNG and WebP to PDF' } },
+    { id: 'word', cat: 'fromPDF', icon: 'fa-file-word', color: 'blue', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionConvert',
+      ar: { t: 'PDF إلى Word', d: 'استخراج النص إلى DOCX' }, en: { t: 'PDF to Word', d: 'Extract text to DOCX' } },
+    { id: 'excel', cat: 'toPDF', icon: 'fa-file-excel', color: 'green', accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.xlsx,.xls', multi: true, actionBtn: 'btnActionConvert', type: 'excel',
+      ar: { t: 'Excel إلى PDF', d: 'تحويل أوراق Excel إلى PDF' }, en: { t: 'Excel to PDF', d: 'Convert Excel sheets to PDF' } },
+    { id: 'ppt', cat: 'fromPDF', icon: 'fa-file-powerpoint', color: 'orange', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionConvert',
+      ar: { t: 'PDF إلى PPT', d: 'كل صفحة في شريحة' }, en: { t: 'PDF to PPT', d: 'Each page becomes a slide' } },
+    { id: 'protect', cat: 'security', icon: 'fa-lock', color: 'red', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionProtect',
+      ar: { t: 'حماية PDF', d: 'تشفير PDF بكلمة مرور' }, en: { t: 'Protect PDF', d: 'Encrypt PDF with a password' } },
+    { id: 'unlock', cat: 'security', icon: 'fa-unlock', color: 'red', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+      ar: { t: 'فك حماية PDF', d: 'فتح ملف محمي بكلمة مرور' }, en: { t: 'Unlock PDF', d: 'Unlock with known password' } },
+    { id: 'numbers', cat: 'organize', icon: 'fa-hashtag', color: 'yellow', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
+      ar: { t: 'أرقام الصفحات', d: 'إضافة أرقام للصفحات' }, en: { t: 'Page Numbers', d: 'Add page numbers' } }
+];
+export { toolsData };
