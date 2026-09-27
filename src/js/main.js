@@ -3,6 +3,7 @@ import { getFileBuffer } from './core/pdf-utils.js';
 import { dict } from './core/i18n.js';
 import { toolsData } from './core/tools.js';
 import { $ } from './core/dom.js';
+import { applyTheme, toggleTheme } from './core/theme.js';
 
 // PDF.js is loaded as a classic script before this ES module.
 if (window.pdfjsLib) {
@@ -10,8 +11,6 @@ if (window.pdfjsLib) {
     APP.pdfjsReady = true;
 }
 
-
-// --- STREAMING_CHUNK:UI Updaters (i18n & Theme) ---
 function renderGrid() {
     const grid = $('#toolsGrid');
     grid.innerHTML = toolsData.map(t => {
@@ -37,24 +36,22 @@ function applyLanguage() {
     document.documentElement.lang = APP.lang;
     document.documentElement.dir = APP.lang === 'ar' ? 'rtl' : 'ltr';
     $('#langBtn').textContent = APP.lang === 'ar' ? 'EN' : 'AR';
-    
-    // Text Replacements
+
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (dict[APP.lang][key]) {
             if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
-                 el.placeholder = dict[APP.lang][key];
+                el.placeholder = dict[APP.lang][key];
             } else {
-                 el.innerHTML = dict[APP.lang][key]; // innerHTML used to keep icons/spans if present
+                el.innerHTML = dict[APP.lang][key];
             }
         }
     });
-    
-    // Special cases (innerHTML with links)
+
     $('#cookieText').innerHTML = dict[APP.lang].cookieMsg;
 
     renderGrid();
-    if(APP.currentTool) {
+    if (APP.currentTool) {
         const tool = toolsData.find(t => t.id === APP.currentTool);
         $('#modalTitle').innerHTML = `<i class="fa-solid ${tool.icon} text-${tool.color}-500"></i> ${tool[APP.lang].t}`;
         $('#actionBtnText').textContent = dict[APP.lang][tool.actionBtn] || dict[APP.lang].btnActionExecute;
@@ -62,31 +59,17 @@ function applyLanguage() {
     }
 }
 
-function applyTheme() {
-    const isDark = APP.theme === 'dark';
-    document.documentElement.classList.toggle('dark', isDark);
-    document.documentElement.dataset.theme = APP.theme;
-
-    const themeColor = document.querySelector('meta[name="theme-color"]');
-    if (themeColor) themeColor.setAttribute('content', isDark ? '#0b1120' : '#ef4444');
-
-    const themeBtn = $('#themeBtn');
-    if (themeBtn) {
-        themeBtn.innerHTML = isDark
-            ? '<i class="fa-solid fa-sun"></i>'
-            : '<i class="fa-solid fa-moon"></i>';
-        themeBtn.setAttribute('aria-label', isDark ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الداكن');
-    }
-}
-
-// --- STREAMING_CHUNK:Event Listeners & Utils ---
-$('#langBtn').onclick = () => { APP.lang = APP.lang === 'ar' ? 'en' : 'ar'; localStorage.setItem('wpdf-lang', APP.lang); applyLanguage(); };
-$('#themeBtn').onclick = () => {
-    APP.theme = APP.theme === 'dark' ? 'light' : 'dark';
-    localStorage.setItem('wpdf-theme', APP.theme);
-    applyTheme();
+$('#langBtn').onclick = () => {
+    APP.lang = APP.lang === 'ar' ? 'en' : 'ar';
+    localStorage.setItem('wpdf-lang', APP.lang);
+    applyLanguage();
 };
 
+$('#themeBtn').onclick = () => {
+    APP.theme = toggleTheme(APP.theme);
+};
+
+// --- STREAMING_CHUNK:Event Listeners & Utils ---
 document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.onclick = () => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -130,10 +113,10 @@ function openPage(page) {
     const m = $('#pageModal');
     let titleStr = page === 'privacy' ? 'pagePrivacyTitle' : 'pageTermsTitle';
     let contentStr = page === 'privacy' ? 'pagePrivacyHtml' : 'pageTermsHtml';
-    
+
     $('#pageTitle').textContent = dict[APP.lang][titleStr];
     $('#pageContent').innerHTML = dict[APP.lang][contentStr];
-    
+
     m.classList.remove('modal-hidden');
 }
 function closePage() {
@@ -143,12 +126,11 @@ $('#pageModal').addEventListener('mousedown', e => { if (e.target === $('#pageMo
 
 $('#contactForm').onsubmit = (e) => {
     e.preventDefault();
-    // Simulate form submission to keep it frontend only
     const btn = e.target.querySelector('button[type="submit"]');
     const originalText = btn.innerHTML;
     btn.innerHTML = `<div class="spinner border-t-white"></div>`;
     btn.disabled = true;
-    
+
     setTimeout(() => {
         btn.innerHTML = originalText;
         btn.disabled = false;
@@ -156,7 +138,6 @@ $('#contactForm').onsubmit = (e) => {
         showToast(dict[APP.lang].formSuccess);
     }, 1500);
 };
-
 
 // --- STREAMING_CHUNK:File Operations & Tool Modals ---
 const modal = $('#modal');
@@ -167,23 +148,23 @@ function openTool(toolId) {
     APP.currentTool = toolId;
     APP.files = [];
     const tool = toolsData.find(t => t.id === toolId);
-    
+
     $('#modalTitle').innerHTML = `<i class="fa-solid ${tool.icon} text-${tool.color}-500"></i> ${tool[APP.lang].t}`;
     $('#actionBtnText').textContent = dict[APP.lang][tool.actionBtn] || dict[APP.lang].btnActionExecute;
-    
+
     const subType = tool.type === 'img' ? 'dropSubImg' : tool.type === 'excel' ? 'dropSubExcel' : 'dropSubPDF';
     $('#dropSubtitle').setAttribute('data-i18n', subType);
     $('#dropSubtitle').textContent = dict[APP.lang][subType];
-    
+
     fileInput.accept = tool.accept;
     tool.multi ? fileInput.setAttribute('multiple', '') : fileInput.removeAttribute('multiple');
-    
+
     renderFiles();
     $('#resultBox').classList.add('hidden');
     $('#statusText').textContent = '';
     $('#actionBtn').disabled = false;
     $('#actionBtn').innerHTML = `<span id="actionBtnText">${dict[APP.lang][tool.actionBtn] || dict[APP.lang].btnActionExecute}</span>`;
-    
+
     buildExtraControls(toolId);
     modal.classList.remove('modal-hidden');
 }
@@ -202,7 +183,7 @@ function handleFiles(files) {
     if (!files.length) return;
     const tool = toolsData.find(t => t.id === APP.currentTool);
     let newFiles = Array.from(files);
-    if(!tool.multi) newFiles = [newFiles[0]];
+    if (!tool.multi) newFiles = [newFiles[0]];
     tool.multi ? APP.files = [...APP.files, ...newFiles] : APP.files = newFiles;
     renderFiles();
     $('#resultBox').classList.add('hidden');
@@ -212,7 +193,7 @@ function removeFile(index) { APP.files.splice(index, 1); renderFiles(); }
 
 function renderFiles() {
     const list = $('#fileList');
-    if(!APP.files.length) { list.innerHTML = ''; return; }
+    if (!APP.files.length) { list.innerHTML = ''; return; }
     list.innerHTML = APP.files.map((f, i) => `
         <div class="flex items-center justify-between bg-gray-100 dark:bg-[#1e293b] p-3 rounded-lg border border-gray-200 dark:border-darkBorder group">
             <div class="flex items-center gap-3 overflow-hidden">
@@ -234,7 +215,7 @@ function buildExtraControls(toolId) {
     box.innerHTML = '';
     box.classList.remove('hidden');
     const inputClass = "w-full mt-1 p-2 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-[#0b1120] focus:border-primary focus:ring-1 focus:ring-primary outline-none";
-    
+
     if (['split', 'delete', 'reorder'].includes(toolId)) {
         let lbl = toolId === 'reorder' ? 'lblOrder' : 'lblRange';
         box.innerHTML = `<label class="block text-sm font-bold mb-1" id="lblExt1" data-i18n="${lbl}">${dict[APP.lang][lbl]}</label><input type="text" id="toolInputVal" class="${inputClass}" dir="ltr" placeholder="1-3, 5, 7">`;
@@ -250,23 +231,32 @@ function buildExtraControls(toolId) {
 
 function updateExtraControlsLang() {
     const toolId = APP.currentTool;
-     if (['split', 'delete', 'reorder'].includes(toolId)) {
+    if (['split', 'delete', 'reorder'].includes(toolId)) {
         let lbl = toolId === 'reorder' ? 'lblOrder' : 'lblRange';
-        const l = $('#lblExt1'); if(l) { l.setAttribute('data-i18n', lbl); l.textContent = dict[APP.lang][lbl]; }
-     }
+        const l = $('#lblExt1');
+        if (l) {
+            l.setAttribute('data-i18n', lbl);
+            l.textContent = dict[APP.lang][lbl];
+        }
+    }
 }
 
 // --- STREAMING_CHUNK:Processing Engine ---
 let currentResultUrl = null;
 function provideDownload(bytes, filename, type = 'application/pdf') {
-    if(currentResultUrl) URL.revokeObjectURL(currentResultUrl);
+    if (currentResultUrl) URL.revokeObjectURL(currentResultUrl);
     const blob = new Blob([bytes], { type });
     currentResultUrl = URL.createObjectURL(blob);
     $('#resultBox').classList.remove('hidden');
     const btn = $('#downloadBtn');
     const newBtn = btn.cloneNode(true);
     btn.parentNode.replaceChild(newBtn, btn);
-    newBtn.onclick = () => { const a = document.createElement('a'); a.href = currentResultUrl; a.download = filename; a.click(); };
+    newBtn.onclick = () => {
+        const a = document.createElement('a');
+        a.href = currentResultUrl;
+        a.download = filename;
+        a.click();
+    };
 }
 
 async function loadPdfDoc(file, password) {
@@ -275,11 +265,11 @@ async function loadPdfDoc(file, password) {
 
 function parseRange(s, maxPages) {
     let a = [];
-    if(!s) return a;
+    if (!s) return a;
     for (const x of s.split(',').map(x => x.trim()).filter(Boolean)) {
         if (x.includes('-')) {
             let [u, v] = x.split('-').map(Number);
-            if(u && v) for (let i = Math.min(u,v); i <= Math.max(u,v); i++) if (i >= 1 && i <= maxPages) a.push(i - 1);
+            if (u && v) for (let i = Math.min(u, v); i <= Math.max(u, v); i++) if (i >= 1 && i <= maxPages) a.push(i - 1);
         } else {
             let i = Number(x);
             if (!isNaN(i) && i >= 1 && i <= maxPages) a.push(i - 1);
@@ -290,9 +280,14 @@ function parseRange(s, maxPages) {
 
 $('#actionBtn').onclick = async () => {
     if (!APP.files.length) { showToast(dict[APP.lang].errNoFiles, true); return; }
-    const btn = $('#actionBtn'); const status = $('#statusText'); const toolId = APP.currentTool;
-    btn.disabled = true; const originalBtnHtml = btn.innerHTML;
-    btn.innerHTML = `<div class="spinner"></div>`; status.textContent = dict[APP.lang].statusProcessing; $('#resultBox').classList.add('hidden');
+    const btn = $('#actionBtn');
+    const status = $('#statusText');
+    const toolId = APP.currentTool;
+    btn.disabled = true;
+    const originalBtnHtml = btn.innerHTML;
+    btn.innerHTML = '<div class="spinner"></div>';
+    status.textContent = dict[APP.lang].statusProcessing;
+    $('#resultBox').classList.add('hidden');
 
     try {
         if (toolId === 'merge') await processMerge();
@@ -306,13 +301,15 @@ $('#actionBtn').onclick = async () => {
         else if (toolId === 'ppt') await processPPT();
         status.textContent = dict[APP.lang].statusDone;
     } catch (error) {
-        console.error(error); showToast(error.message || dict[APP.lang].errGeneral, true); status.textContent = '';
+        console.error(error);
+        showToast(error.message || dict[APP.lang].errGeneral, true);
+        status.textContent = '';
     } finally {
-        btn.disabled = false; btn.innerHTML = originalBtnHtml;
+        btn.disabled = false;
+        btn.innerHTML = originalBtnHtml;
     }
 };
 
-// Tasks implementations
 async function processMerge() {
     const out = await PDFLib.PDFDocument.create();
     for (const f of APP.files) {
@@ -338,7 +335,7 @@ async function processImages() {
 async function processSplit() {
     const p = await loadPdfDoc(APP.files[0]);
     const nums = parseRange($('#toolInputVal').value, p.getPageCount());
-    if(!nums.length) throw new Error('Invalid page range');
+    if (!nums.length) throw new Error('Invalid page range');
     const out = await PDFLib.PDFDocument.create();
     const pages = await out.copyPages(p, nums);
     pages.forEach(pg => out.addPage(pg));
@@ -346,12 +343,16 @@ async function processSplit() {
 }
 
 async function processEdit(type) {
-    const p = await loadPdfDoc(APP.files[0]); const n = p.getPageCount(); let idx = [...Array(n).keys()];
+    const p = await loadPdfDoc(APP.files[0]);
+    const n = p.getPageCount();
+    let idx = [...Array(n).keys()];
     if (type === 'delete') {
-        const del = parseRange($('#toolInputVal').value, n); idx = idx.filter(i => !del.includes(i));
-        if(!idx.length) throw new Error('Cannot delete all pages');
+        const del = parseRange($('#toolInputVal').value, n);
+        idx = idx.filter(i => !del.includes(i));
+        if (!idx.length) throw new Error('Cannot delete all pages');
     } else if (type === 'reorder') {
-        const r = parseRange($('#toolInputVal').value, n); if (r.length > 0) idx = r; 
+        const r = parseRange($('#toolInputVal').value, n);
+        if (r.length > 0) idx = r;
     }
     const out = await PDFLib.PDFDocument.create();
     const pages = await out.copyPages(p, idx);
@@ -359,8 +360,10 @@ async function processEdit(type) {
     if (type === 'numbers') {
         const pos = $('#toolInputVal').value;
         out.getPages().forEach((pg, i) => {
-            const { width, height } = pg.getSize(); let x = width / 2;
-            if (pos === 'bottom-right') x = width - 35; if (pos === 'bottom-left') x = 35;
+            const { width, height } = pg.getSize();
+            let x = width / 2;
+            if (pos === 'bottom-right') x = width - 35;
+            if (pos === 'bottom-left') x = 35;
             pg.drawText(String(i + 1), { x: x - 5, y: 20, size: 12, color: PDFLib.rgb(0.2, 0.2, 0.2) });
         });
     }
@@ -368,7 +371,8 @@ async function processEdit(type) {
 }
 
 async function processProtect() {
-    const pwd = $('#toolInputVal').value.trim(); if (!pwd) throw new Error(dict[APP.lang].errPassword);
+    const pwd = $('#toolInputVal').value.trim();
+    if (!pwd) throw new Error(dict[APP.lang].errPassword);
     const p = await loadPdfDoc(APP.files[0]);
     const pdfBytes = await p.save({ encrypt: { userPassword: pwd, ownerPassword: pwd + 'admin', permissions: { printing: 'highResolution', modifying: false, copying: false } }});
     provideDownload(pdfBytes, 'protected.pdf');
@@ -387,23 +391,34 @@ async function processWord() {
     const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
     let children = [];
     for (let i = 1; i <= pdf.numPages; i++) {
-        const pg = await pdf.getPage(i); const content = await pg.getTextContent();
+        const pg = await pdf.getPage(i);
+        const content = await pg.getTextContent();
         children.push(new docx.Paragraph({ children: [new docx.TextRun(content.items.map(x => x.str).join(' '))] }));
     }
-    const doc = new docx.Document({ sections: [{ properties: {}, children: children }] });
-    provideDownload(await (await docx.Packer.toBlob(doc)).arrayBuffer(), 'converted.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    const doc = new docx.Document({ sections: [{ properties: {}, children }] });
+    provideDownload(
+        await (await docx.Packer.toBlob(doc)).arrayBuffer(),
+        'converted.docx',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    );
 }
 
 async function processExcel() {
     const wb = XLSX.read(await getFileBuffer(APP.files[0]), { type: 'array' });
-    const { jsPDF } = window.jspdf; const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
     pdf.setFontSize(10);
     wb.SheetNames.forEach((sn, si) => {
         if (si > 0) pdf.addPage();
-        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1 }); let y = 15;
-        pdf.setFontSize(14); pdf.text(String(sn), 10, y); y += 10; pdf.setFontSize(9);
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header: 1 });
+        let y = 15;
+        pdf.setFontSize(14);
+        pdf.text(String(sn), 10, y);
+        y += 10;
+        pdf.setFontSize(9);
         rows.forEach(r => {
-            pdf.text(r.map(x => String(x != null ? x : '')).join(' | ').substring(0, 120), 10, y); y += 6;
+            pdf.text(r.map(x => String(x != null ? x : '')).join(' | ').substring(0, 120), 10, y);
+            y += 6;
             if (y > 280) { pdf.addPage(); y = 15; }
         });
     });
@@ -414,25 +429,27 @@ async function processPPT() {
     if (!APP.pdfjsReady) throw new Error(dict[APP.lang].errPdfjs || "PDF.js Error");
     const pdfData = new Uint8Array(await getFileBuffer(APP.files[0]));
     const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
-    const ppt = new PptxGenJS(); ppt.layout = 'LAYOUT_WIDE';
+    const ppt = new PptxGenJS();
+    ppt.layout = 'LAYOUT_WIDE';
     for (let i = 1; i <= pdf.numPages; i++) {
-        const pg = await pdf.getPage(i); const vp = pg.getViewport({ scale: 1.5 });
-        const canvas = document.createElement('canvas'); canvas.width = vp.width; canvas.height = vp.height;
+        const pg = await pdf.getPage(i);
+        const vp = pg.getViewport({ scale: 1.5 });
+        const canvas = document.createElement('canvas');
+        canvas.width = vp.width;
+        canvas.height = vp.height;
         await pg.render({ canvasContext: canvas.getContext('2d'), viewport: vp }).promise;
         ppt.addSlide().addImage({ data: canvas.toDataURL('image/jpeg', 0.85), x: 0, y: 0, w: '100%', h: '100%' });
     }
     provideDownload(await ppt.write({ outputType: 'arraybuffer' }), 'slides.pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation');
 }
 
-// --- STREAMING_CHUNK:App Initialization ---
-applyTheme();
+applyTheme(APP.theme);
 applyLanguage();
-checkCookies(); // Check and show cookie banner if needed
+checkCookies();
 
 const requestedTool = new URLSearchParams(location.search).get('tool');
 if (requestedTool && toolsData.some(t => t.id === requestedTool)) {
     setTimeout(() => openTool(requestedTool), 0);
 }
 
-// Public handlers used by inline HTML attributes and dynamically generated tool cards.
 Object.assign(window, { openTool, closeTool, removeFile, acceptCookies, openPage, closePage });
