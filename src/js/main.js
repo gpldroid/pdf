@@ -131,17 +131,11 @@ $('#pageModal').addEventListener('mousedown', e => { if (e.target === $('#pageMo
 
 $('#contactForm').onsubmit = (e) => {
     e.preventDefault();
-    const btn = e.target.querySelector('button[type="submit"]');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = `<div class="spinner border-t-white"></div>`;
-    btn.disabled = true;
-
-    setTimeout(() => {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-        e.target.reset();
-        showToast(dict[APP.lang].formSuccess);
-    }, 1500);
+    const [name,email]=e.target.querySelectorAll('input');
+    const message=e.target.querySelector('textarea');
+    const subject=encodeURIComponent('World PDF — رسالة من الموقع');
+    const body=encodeURIComponent(`الاسم: ${name.value}\nالبريد: ${email.value}\n\n${message.value}`);
+    window.location.href=`mailto:info@larache.xyz?subject=${subject}&body=${body}`;
 };
 
 // --- STREAMING_CHUNK:File Operations & Tool Modals ---
@@ -324,7 +318,6 @@ $('#actionBtn').onclick = async () => {
         else if (toolId === 'pdf-images') await processPdfImages();
         else if (toolId === 'text') await processText();
         status.textContent = dict[APP.lang].statusDone;
-        addHistory(toolId, APP.files);
         finishProgress();
     } catch (error) {
         console.error(error);
