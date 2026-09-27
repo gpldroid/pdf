@@ -21,7 +21,14 @@ const toolsData = [
       ar: { t: 'حماية PDF', d: 'تشفير PDF بكلمة مرور' }, en: { t: 'Protect PDF', d: 'Encrypt PDF with a password' } },
     { id: 'unlock', cat: 'security', icon: 'fa-unlock', color: 'red', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
       ar: { t: 'فك حماية PDF', d: 'فتح ملف محمي بكلمة مرور' }, en: { t: 'Unlock PDF', d: 'Unlock with known password' } },
-    { id: 'numbers', cat: 'organize', icon: 'fa-hashtag', color: 'yellow', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute',
-      ar: { t: 'أرقام الصفحات', d: 'إضافة أرقام للصفحات' }, en: { t: 'Page Numbers', d: 'Add page numbers' } }
+    { id: 'numbers', cat: 'organize', icon: 'fa-hashtag', color: 'yellow', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute', ar: { t: 'أرقام الصفحات', d: 'إضافة أرقام للصفحات' }, en: { t: 'Page Numbers', d: 'Add page numbers' } },
+    { id: 'rotate', cat: 'organize', icon: 'fa-rotate-right', color: 'purple', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute', ar: { t: 'تدوير PDF', d: 'تدوير الصفحات 90 درجة' }, en: { t: 'Rotate PDF', d: 'Rotate pages by 90 degrees' } },
+    { id: 'watermark', cat: 'security', icon: 'fa-stamp', color: 'red', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute', ar: { t: 'علامة مائية', d: 'إضافة نص إلى كل صفحة' }, en: { t: 'Watermark PDF', d: 'Add text to every page' } },
+    { id: 'extract', cat: 'organize', icon: 'fa-file-export', color: 'purple', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute', ar: { t: 'استخراج صفحات', d: 'حفظ صفحات محددة في ملف جديد' }, en: { t: 'Extract Pages', d: 'Save selected pages as a new PDF' } },
+    { id: 'pdf-images', cat: 'fromPDF', icon: 'fa-images', color: 'green', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionConvert', ar: { t: 'PDF إلى صور', d: 'تحويل الصفحات إلى PNG' }, en: { t: 'PDF to Images', d: 'Render pages as PNG images' } },
+    { id: 'text', cat: 'fromPDF', icon: 'fa-file-lines', color: 'blue', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionConvert', ar: { t: 'PDF إلى نص', d: 'استخراج النص من الصفحات' }, en: { t: 'PDF to Text', d: 'Extract text from pages' } },
+    { id: 'ocr', cat: 'fromPDF', icon: 'fa-language', color: 'orange', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionConvert', ar: { t: 'OCR للنص', d: 'استخراج النص من الصور الممسوحة' }, en: { t: 'OCR Text', d: 'Extract text from scanned pages' } },
+    { id: 'flatten', cat: 'optimize', icon: 'fa-layer-group', color: 'blue', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute', ar: { t: 'تسطيح PDF', d: 'تسطيح حقول النماذج داخل الملف' }, en: { t: 'Flatten PDF', d: 'Flatten form fields in the PDF' } },
+    { id: 'repair', cat: 'optimize', icon: 'fa-screwdriver-wrench', color: 'yellow', accept: 'application/pdf,.pdf', multi: false, actionBtn: 'btnActionExecute', ar: { t: 'إصلاح PDF', d: 'إعادة بناء ملف PDF قابل للقراءة' }, en: { t: 'Repair PDF', d: 'Rebuild a readable PDF copy' } }
 ];
 export { toolsData };

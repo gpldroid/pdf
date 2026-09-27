@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
+    <meta name="color-scheme" content="light dark">
+    <link rel="apple-touch-icon" href="./assets/icons/apple-touch-icon.svg">
     <!-- Theme bootstrap: set the theme before Tailwind renders to avoid light/dark flash. -->
     <script>
         (function () {
@@ -57,19 +59,29 @@
     }
     </script>
 
+
+    <script type="application/ld+json">
+    {
+      "@context":"https://schema.org","@graph":[
+        {"@type":"WebSite","name":"World PDF","url":"https://www.wpdf.online/","potentialAction":{"@type":"SearchAction","target":"https://www.wpdf.online/?q={search_term_string}","query-input":"required name=search_term_string"}},
+        {"@type":"Organization","name":"World PDF","url":"https://www.wpdf.online/","logo":"https://www.wpdf.online/assets/icons/favicon.svg"},
+        {"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"هل تتم معالجة الملفات محلياً؟","acceptedAnswer":{"@type":"Answer","text":"أدوات المعالجة الأساسية في World PDF تعمل داخل المتصفح ولا تحتاج إلى رفع الملفات إلى خادم المعالجة التابع للموقع."}},{"@type":"Question","name":"هل أحتاج إلى حساب؟","acceptedAnswer":{"@type":"Answer","text":"لا يتطلب استخدام الأدوات إنشاء حساب."}}]}
+      ]
+    }
+    </script>
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://www.wpdf.online/">
     <meta property="og:title" content="World PDF — أدوات PDF مجانية وسريعة وآمنة">
     <meta property="og:description" content="مجموعة أدوات احترافية ومجانية لمعالجة ملفات PDF مباشرة عبر متصفحك بأمان تام وبدون رفع ملفاتك لأي خوادم خارجية.">
-    <meta property="og:image" content="https://placehold.co/1200x630/ef4444/ffffff?text=WorldPDF+Tools">
+    <meta property="og:image" content="https://www.wpdf.online/assets/og-image.svg">
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://www.wpdf.online/">
     <meta name="twitter:title" content="World PDF — أدوات PDF مجانية وسريعة وآمنة">
     <meta name="twitter:description" content="مجموعة أدوات احترافية ومجانية لمعالجة ملفات PDF مباشرة عبر متصفحك بأمان تام وبدون رفع ملفاتك لأي خوادم خارجية.">
-    <meta name="twitter:image" content="https://placehold.co/1200x630/ef4444/ffffff?text=WPDF+Tools">
+    <meta name="twitter:image" content="https://www.wpdf.online/assets/og-image.svg">
     
     <title>World PDF — أدوات PDF مجانية وسريعة وآمنة</title>
     
@@ -105,13 +117,7 @@
         }
     </script>
 
-    <!-- Libraries -->
-    <script defer src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/docx@9.0.0/build/index.umd.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- Heavy conversion libraries are loaded only when their tools are used. -->
 
     <link rel="icon" href="./assets/icons/favicon.svg" type="image/svg+xml">
     <link rel="manifest" href="./site.webmanifest">
@@ -119,6 +125,7 @@
 </head>
 <body class="bg-gray-50 text-gray-900 dark:bg-darkBg dark:text-gray-100 antialiased selection:bg-primary selection:text-white pb-16">
 
+    <a href="#tools" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-[100] bg-primary text-white px-4 py-2 rounded-lg font-bold">تجاوز إلى الأدوات</a>
     <header class="sticky top-0 z-40 w-full glass bg-white/80 dark:bg-darkBg/90 border-b border-gray-200 dark:border-darkBorder">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <a href="#" class="flex items-center gap-2 text-2xl font-extrabold hover:opacity-80 transition-opacity">
@@ -140,6 +147,7 @@
                 <button id="langBtn" class="w-10 h-10 rounded-full border border-gray-300 dark:border-darkBorder flex items-center justify-center hover:border-primary hover:text-primary transition-all font-bold text-sm bg-white dark:bg-darkCard shadow-sm" title="Change Language">
                     EN
                 </button>
+                <button id="installBtn" type="button" class="hidden w-10 h-10 rounded-full border border-gray-300 dark:border-darkBorder items-center justify-center hover:border-primary hover:text-primary transition-all bg-white dark:bg-darkCard" title="تثبيت التطبيق" aria-label="تثبيت التطبيق"><i class="fa-solid fa-download"></i></button>
                 <button id="themeBtn" class="w-10 h-10 rounded-full border border-gray-300 dark:border-darkBorder flex items-center justify-center hover:border-primary hover:text-primary transition-all bg-white dark:bg-darkCard shadow-sm" title="Toggle Theme">
                     <i class="fa-solid fa-moon"></i>
                 </button>
@@ -160,6 +168,10 @@
     </section>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 pb-8" id="tools">
+        <div class="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-3 mb-5">
+            <label class="relative block"><span class="sr-only">البحث عن أداة</span><i class="fa-solid fa-magnifying-glass absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i><input id="toolSearch" type="search" class="w-full h-12 rounded-xl border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard pr-11 pl-4 outline-none focus:border-primary focus:ring-2 focus:ring-primary/20" data-i18n-placeholder="searchTools" placeholder="ابحث عن أداة..."></label>
+            <a href="#about" class="hidden md:flex items-center justify-center gap-2 h-12 px-5 rounded-xl border border-gray-200 dark:border-darkBorder text-sm font-bold hover:border-primary hover:text-primary"><i class="fa-solid fa-shield-halved"></i><span data-i18n="privacyBadge">المعالجة محلياً</span></a>
+        </div>
         <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2" id="filterContainer">
             <button class="filter-btn active px-6 py-2 rounded-full border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard whitespace-nowrap font-bold text-sm transition-colors [&.active]:bg-primary [&.active]:text-white [&.active]:border-primary" data-cat="all" data-i18n="filterAll">الكل</button>
             <button class="filter-btn px-6 py-2 rounded-full border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard whitespace-nowrap font-bold text-sm transition-colors hover:border-primary hover:text-primary" data-cat="organize" data-i18n="filterOrg">تنظيم</button>
@@ -169,6 +181,8 @@
             <button class="filter-btn px-6 py-2 rounded-full border border-gray-300 dark:border-darkBorder bg-white dark:bg-darkCard whitespace-nowrap font-bold text-sm transition-colors hover:border-primary hover:text-primary" data-cat="security" data-i18n="filterSec">الأمان</button>
         </div>
     </div>
+
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-5" id="recentSection" hidden><div class="flex items-center justify-between mb-3"><h2 class="font-extrabold text-lg" data-i18n="recentTitle">آخر الأدوات المستخدمة</h2></div><div id="recentTools" class="flex gap-2 overflow-x-auto hide-scrollbar"></div></section>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5" id="toolsGrid">
         <!-- Cards generated by JS -->
@@ -298,13 +312,16 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400" id="dropSubtitle">صيغ مدعومة: PDF</p>
                     <input type="file" id="fileInput" class="hidden" multiple>
                 </div>
-                <div id="fileList" class="mt-4 flex flex-col gap-2 empty:hidden"></div>
+                <div id="fileList" class="mt-4 flex flex-col gap-2 empty:hidden" aria-live="polite"></div>
+                <div id="fileMeta" class="mt-3 hidden text-xs text-gray-500 dark:text-gray-400"></div>
                 <div id="toolControls" class="mt-5 hidden bg-gray-50 dark:bg-darkCard p-4 rounded-xl border border-gray-200 dark:border-darkBorder"></div>
                 <div class="mt-6 flex flex-col items-center">
+                    <div id="progressWrap" class="hidden w-full mb-3"><div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1"><span id="progressLabel">0%</span><span id="cancelLabel">يمكنك الإلغاء</span></div><div class="h-2 rounded-full bg-gray-200 dark:bg-gray-700 overflow-hidden"><div id="progressBar" class="h-full bg-primary transition-all" style="width:0%"></div></div></div>
                     <button id="actionBtn" class="bg-primary hover:bg-primaryDark text-white font-bold py-3 px-8 rounded-full shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 w-full sm:w-auto justify-center">
                         <span id="actionBtnText">تنفيذ</span>
                     </button>
-                    <div id="statusText" class="mt-3 text-sm font-medium text-gray-600 dark:text-gray-400 h-5"></div>
+                    <div id="statusText" class="mt-3 text-sm font-medium text-gray-600 dark:text-gray-400 min-h-5" aria-live="polite"></div>
+                    <button id="cancelBtn" type="button" class="hidden mt-2 text-sm font-bold text-red-600 dark:text-red-400 hover:underline">إلغاء المعالجة</button>
                 </div>
                 <div id="resultBox" class="mt-5 hidden p-4 border border-green-500/30 bg-green-50 dark:bg-green-500/10 rounded-xl text-center">
                     <p class="text-green-700 dark:text-green-400 font-bold mb-3 flex items-center justify-center gap-2">
@@ -338,6 +355,7 @@
         <span id="toastMsg">رسالة</span>
     </div>
 
+    <script>if("serviceWorker" in navigator){window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(()=>{}));}</script>
     <script type="module" src="./src/js/main.js"></script>
 </body>
 </html>

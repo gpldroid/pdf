@@ -54,3 +54,14 @@ html.dark {
 html.theme-ready body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+
+/* Accessibility and motion preferences */
+:focus-visible{outline:3px solid rgba(239,68,68,.55);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+@media (max-width:640px){
+  .tool-card{min-height:88px}
+  #toolSearch{font-size:16px}
+}
