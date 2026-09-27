@@ -38,7 +38,7 @@ for (const file of required) {
 }
 
 const index = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-for (const ref of ['./src/css/main.css', './src/js/main.js', './assets/icons/favicon.svg', './site.webmanifest', './sw.js', './assets/og-image.svg']) {
+for (const ref of ['./src/css/main.css', './src/js/main.js', './assets/icons/favicon.svg', './site.webmanifest', './sw.js', 'assets/og-image.svg']) {
   if (!index.includes(ref)) errors.push(`index.html is missing reference: ${ref}`);
 }
 
@@ -66,5 +66,5 @@ if (errors.length) {
 
 const toolPages=['merge','split','delete','reorder','compress','images','word','excel','ppt','protect','unlock','numbers','rotate','watermark','extract','pdf-images','text'];
 for (const id of toolPages) { if (!fs.existsSync(path.join(root,'tools',`${id}.html`))) errors.push(`Missing tool page: ${id}`); }
-if (errors.length) { console.error(errors.join('\\n')); process.exit(1); }
+if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 console.log(`Static site validation passed (${required.length} required paths checked, ${toolPages.length} tool pages checked).`);
