@@ -4,16 +4,19 @@ import { dict } from './core/i18n.js';
 import { toolsData } from './core/tools.js';
 import { $ } from './core/dom.js';
 import { applyTheme, toggleTheme } from './core/theme.js';
+import { ensurePdfJs } from './core/pdf-loader.js';
+import { ensureLibrary } from './core/library-loader.js';
+import { addHistory, readHistory } from './core/history.js';
 
-// PDF.js is loaded as a classic script before this ES module.
-if (window.pdfjsLib) {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    APP.pdfjsReady = true;
-}
+
+function matchesTool(tool, query) { const q = query.trim().toLowerCase(); if (!q) return true; return [tool[APP.lang].t, tool[APP.lang].d, tool.id].join(' ').toLowerCase().includes(q); }
 
 function renderGrid() {
     const grid = $('#toolsGrid');
-    grid.innerHTML = toolsData.map(t => {
+    const query = $('#toolSearch')?.value || '';
+    const active = document.querySelector('.filter-btn.active')?.getAttribute('data-cat') || 'all';
+    const visibleTools = toolsData.filter(t => (active === 'all' || t.cat === active) && matchesTool(t, query));
+    grid.innerHTML = visibleTools.map(t => {
         const colors = {
             purple: 'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400',
             blue: 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400',
@@ -37,6 +40,7 @@ function applyLanguage() {
     document.documentElement.dir = APP.lang === 'ar' ? 'rtl' : 'ltr';
     $('#langBtn').textContent = APP.lang === 'ar' ? 'EN' : 'AR';
 
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{const key=el.getAttribute('data-i18n-placeholder'); if(dict[APP.lang][key]) el.placeholder=dict[APP.lang][key];});
     document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.getAttribute('data-i18n');
         if (dict[APP.lang][key]) {
@@ -50,7 +54,7 @@ function applyLanguage() {
 
     $('#cookieText').innerHTML = dict[APP.lang].cookieMsg;
 
-    renderGrid();
+    refreshToolListing();
     if (APP.currentTool) {
         const tool = toolsData.find(t => t.id === APP.currentTool);
         $('#modalTitle').innerHTML = `<i class="fa-solid ${tool.icon} text-${tool.color}-500"></i> ${tool[APP.lang].t}`;
@@ -58,6 +62,9 @@ function applyLanguage() {
         updateExtraControlsLang();
     }
 }
+
+const toolSearch = $('#toolSearch');
+if (toolSearch) toolSearch.addEventListener('input', renderGrid);
 
 $('#langBtn').onclick = () => {
     APP.lang = APP.lang === 'ar' ? 'en' : 'ar';
@@ -75,9 +82,7 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         const cat = btn.getAttribute('data-cat');
-        document.querySelectorAll('.tool-card').forEach(card => {
-            card.style.display = (cat === 'all' || card.getAttribute('data-cat') === cat) ? 'flex' : 'none';
-        });
+        renderGrid();
     };
 });
 
@@ -193,7 +198,8 @@ function removeFile(index) { APP.files.splice(index, 1); renderFiles(); }
 
 function renderFiles() {
     const list = $('#fileList');
-    if (!APP.files.length) { list.innerHTML = ''; return; }
+    if (!APP.files.length) { list.innerHTML = ''; $('#fileMeta')?.classList.add('hidden'); return; }
+    const totalBytes=APP.files.reduce((n,f)=>n+f.size,0); const meta=$('#fileMeta'); if(meta){meta.classList.remove('hidden'); meta.textContent=`${APP.files.length} ${dict[APP.lang].filesSelected} · ${(totalBytes/1024/1024).toFixed(2)} MB`;}
     list.innerHTML = APP.files.map((f, i) => `
         <div class="flex items-center justify-between bg-gray-100 dark:bg-[#1e293b] p-3 rounded-lg border border-gray-200 dark:border-darkBorder group">
             <div class="flex items-center gap-3 overflow-hidden">
@@ -243,6 +249,14 @@ function updateExtraControlsLang() {
 
 // --- STREAMING_CHUNK:Processing Engine ---
 let currentResultUrl = null;
+let activeAbortController = null;
+function setProgress(value) { const pct=Math.max(0,Math.min(100,Math.round(value))); const bar=$('#progressBar'); const label=$('#progressLabel'); if(bar) bar.style.width=pct+'%'; if(label) label.textContent=pct+'%'; }
+function startProgress(){ $('#progressWrap').classList.remove('hidden'); $('#cancelBtn').classList.remove('hidden'); setProgress(0); activeAbortController=new AbortController(); }
+function finishProgress(){ $('#progressWrap').classList.add('hidden'); $('#cancelBtn').classList.add('hidden'); activeAbortController=null; setProgress(100); }
+function checkCancelled(){ if(activeAbortController?.signal.aborted) throw new Error(dict[APP.lang].errCancelled); }
+function updateProgress(done,total){ setProgress(total ? done/total*100 : 0); }
+$('#cancelBtn').onclick=()=>{ if(activeAbortController){activeAbortController.abort(); $('#statusText').textContent=dict[APP.lang].cancelled;} };
+
 function provideDownload(bytes, filename, type = 'application/pdf') {
     if (currentResultUrl) URL.revokeObjectURL(currentResultUrl);
     const blob = new Blob([bytes], { type });
@@ -284,6 +298,7 @@ $('#actionBtn').onclick = async () => {
     const status = $('#statusText');
     const toolId = APP.currentTool;
     btn.disabled = true;
+    startProgress();
     const originalBtnHtml = btn.innerHTML;
     btn.innerHTML = '<div class="spinner"></div>';
     status.textContent = dict[APP.lang].statusProcessing;
@@ -300,6 +315,8 @@ $('#actionBtn').onclick = async () => {
         else if (toolId === 'excel') await processExcel();
         else if (toolId === 'ppt') await processPPT();
         status.textContent = dict[APP.lang].statusDone;
+        addHistory(toolId, APP.files);
+        finishProgress();
     } catch (error) {
         console.error(error);
         showToast(error.message || dict[APP.lang].errGeneral, true);
@@ -307,42 +324,48 @@ $('#actionBtn').onclick = async () => {
     } finally {
         btn.disabled = false;
         btn.innerHTML = originalBtnHtml;
+        if (!activeAbortController) setProgress(100); else finishProgress();
     }
 };
 
 async function processMerge() {
+    await ensureLibrary('pdfLib');
     const out = await PDFLib.PDFDocument.create();
-    for (const f of APP.files) {
+    for (let fi=0; fi<APP.files.length; fi++) {
+        checkCancelled(); const f=APP.files[fi];
         const p = await loadPdfDoc(f);
+        updateProgress(fi, APP.files.length);
         const pages = await out.copyPages(p, p.getPageIndices());
         pages.forEach(pg => out.addPage(pg));
     }
-    provideDownload(await out.save({ useObjectStreams: true }), 'merged.pdf');
+    updateProgress(APP.files.length, APP.files.length); provideDownload(await out.save({ useObjectStreams: true }), 'merged.pdf'); addHistory('merge',APP.files);
 }
 
 async function processImages() {
+    await ensureLibrary('pdfLib');
     const out = await PDFLib.PDFDocument.create();
-    for (const f of APP.files) {
-        const b = await getFileBuffer(f);
+    for (let fi=0; fi<APP.files.length; fi++) { checkCancelled(); const f=APP.files[fi]; updateProgress(fi,APP.files.length); const b = await getFileBuffer(f);
         const img = f.type === 'image/png' ? await out.embedPng(b) : await out.embedJpg(b);
         const dim = img.scale(1);
         const page = out.addPage([dim.width, dim.height]);
         page.drawImage(img, { x: 0, y: 0, width: dim.width, height: dim.height });
     }
-    provideDownload(await out.save({ useObjectStreams: true }), 'images_to_pdf.pdf');
+    updateProgress(APP.files.length,APP.files.length); provideDownload(await out.save({ useObjectStreams: true }), 'images_to_pdf.pdf'); addHistory('images',APP.files);
 }
 
 async function processSplit() {
+    await ensureLibrary('pdfLib');
     const p = await loadPdfDoc(APP.files[0]);
     const nums = parseRange($('#toolInputVal').value, p.getPageCount());
     if (!nums.length) throw new Error('Invalid page range');
     const out = await PDFLib.PDFDocument.create();
     const pages = await out.copyPages(p, nums);
     pages.forEach(pg => out.addPage(pg));
-    provideDownload(await out.save({ useObjectStreams: true }), 'split.pdf');
+    updateProgress(100,100); provideDownload(await out.save({ useObjectStreams: true }), 'split.pdf'); addHistory('split',APP.files);
 }
 
 async function processEdit(type) {
+    await ensureLibrary('pdfLib');
     const p = await loadPdfDoc(APP.files[0]);
     const n = p.getPageCount();
     let idx = [...Array(n).keys()];
@@ -367,25 +390,28 @@ async function processEdit(type) {
             pg.drawText(String(i + 1), { x: x - 5, y: 20, size: 12, color: PDFLib.rgb(0.2, 0.2, 0.2) });
         });
     }
-    provideDownload(await out.save({ useObjectStreams: true }), `${type}_result.pdf`);
+    updateProgress(100,100); provideDownload(await out.save({ useObjectStreams: true }), `${type}_result.pdf`); addHistory(type,APP.files);
 }
 
 async function processProtect() {
+    await ensureLibrary('pdfLib');
     const pwd = $('#toolInputVal').value.trim();
     if (!pwd) throw new Error(dict[APP.lang].errPassword);
     const p = await loadPdfDoc(APP.files[0]);
     const pdfBytes = await p.save({ encrypt: { userPassword: pwd, ownerPassword: pwd + 'admin', permissions: { printing: 'highResolution', modifying: false, copying: false } }});
-    provideDownload(pdfBytes, 'protected.pdf');
+    updateProgress(100,100); provideDownload(pdfBytes, 'protected.pdf'); addHistory('protect',APP.files);
 }
 
 async function processUnlock() {
+    await ensureLibrary('pdfLib');
     const pwd = prompt(APP.lang === 'ar' ? 'أدخل كلمة المرور الحالية لفك الحماية:' : 'Enter current password to unlock:');
     if (pwd === null) throw new Error('Cancelled');
     const p = await loadPdfDoc(APP.files[0], pwd);
-    provideDownload(await p.save(), 'unlocked.pdf');
+    updateProgress(100,100); provideDownload(await p.save(), 'unlocked.pdf'); addHistory('unlock',APP.files);
 }
 
 async function processWord() {
+    await ensureLibrary('docx'); await ensurePdfJs(); APP.pdfjsReady=true;
     if (!APP.pdfjsReady) throw new Error(dict[APP.lang].errPdfjs || "PDF.js Error");
     const pdfData = new Uint8Array(await getFileBuffer(APP.files[0]));
     const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
@@ -404,6 +430,7 @@ async function processWord() {
 }
 
 async function processExcel() {
+    await ensureLibrary('xlsx'); await ensureLibrary('jspdf');
     const wb = XLSX.read(await getFileBuffer(APP.files[0]), { type: 'array' });
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
@@ -426,6 +453,7 @@ async function processExcel() {
 }
 
 async function processPPT() {
+    await ensureLibrary('pptx'); await ensurePdfJs(); APP.pdfjsReady=true;
     if (!APP.pdfjsReady) throw new Error(dict[APP.lang].errPdfjs || "PDF.js Error");
     const pdfData = new Uint8Array(await getFileBuffer(APP.files[0]));
     const pdf = await pdfjsLib.getDocument({ data: pdfData }).promise;
@@ -446,6 +474,7 @@ async function processPPT() {
 applyTheme(APP.theme);
 applyLanguage();
 checkCookies();
+refreshToolListing();
 
 const requestedTool = new URLSearchParams(location.search).get('tool');
 if (requestedTool && toolsData.some(t => t.id === requestedTool)) {
