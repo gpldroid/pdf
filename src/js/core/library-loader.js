@@ -5,9 +5,10 @@ const urls={
   xlsx:'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
   docx:'https://cdn.jsdelivr.net/npm/docx@9.0.0/build/index.umd.js',
   pptx:'https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js',
-  jszip:'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js'
+  jszip:'https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js',
+  tesseract:'https://cdn.jsdelivr.net/npm/tesseract.js@5.0.5/dist/tesseract.min.js'
 };
-const globals={pdfLib:'PDFLib',jspdf:'jspdf',xlsx:'XLSX',docx:'docx',pptx:'PptxGenJS',jszip:'JSZip'};
+const globals={pdfLib:'PDFLib',jspdf:'jspdf',xlsx:'XLSX',docx:'docx',pptx:'PptxGenJS',jszip:'JSZip',tesseract:'Tesseract'};
 function ensureLibrary(name){
  if(window[globals[name]]) return Promise.resolve(window[globals[name]]);
  if(loaders[name]) return loaders[name];
