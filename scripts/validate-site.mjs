@@ -29,7 +29,10 @@ const required = [
   'tools/watermark.html',
   'tools/extract.html',
   'tools/pdf-images.html',
-  'tools/text.html'
+  'tools/text.html',
+  'tools/ocr.html',
+  'tools/flatten.html',
+  'tools/repair.html'
 ];
 
 const errors = [];
@@ -64,7 +67,7 @@ if (errors.length) {
   process.exit(1);
 }
 
-const toolPages=['merge','split','delete','reorder','compress','images','word','excel','ppt','protect','unlock','numbers','rotate','watermark','extract','pdf-images','text'];
+const toolPages=['merge','split','delete','reorder','compress','images','word','excel','ppt','protect','unlock','numbers','rotate','watermark','extract','pdf-images','text','ocr','flatten','repair'];
 for (const id of toolPages) { if (!fs.existsSync(path.join(root,'tools',`${id}.html`))) errors.push(`Missing tool page: ${id}`); }
 if (errors.length) { console.error(errors.join('\n')); process.exit(1); }
 console.log(`Static site validation passed (${required.length} required paths checked, ${toolPages.length} tool pages checked).`);
